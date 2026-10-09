@@ -336,14 +336,23 @@
   // • Judul > 1 baris: jarak 1 spasi
   // (Suplemen 1 A butir 11)
   show heading.where(level: 3): it => {
-    set par(first-line-indent: 0pt, spacing: 0pt, leading: _leading)
+    set par(
+      first-line-indent: 0pt,
+      hanging-indent: 1.2cm, // Menjaga teks baris kedua judul sejajar di bawah teks judul (bukan di bawah angka 2.1.1)
+      spacing: 0pt,
+      leading: _leading,
+    )
     v(1.5 * _leading)
-    text(font: _font, size: _sz-body, weight: "regular")[
-      #if it.numbering != none {
-        context counter(heading).display("1.1.1")
-        h(0.75em)
-      }
-      #it.body
+
+    // Geser seluruh blok heading ke kanan
+    pad(left: 0.8cm)[
+      #text(font: _font, size: _sz-body, weight: "regular")[
+        #if it.numbering != none {
+          context counter(heading).display("1.1.1")
+          h(0.75em)
+        }
+        #it.body
+      ]
     ]
     v(_leading)
   }
@@ -496,13 +505,7 @@
   // Times New Roman 14pt
   text(weight: "bold")[
     #(
-        upper(fakultas)
-        + "\n"
-        + upper(program-studi)
-        + "\n"
-        + upper(kota)
-        + "\n"
-        + tahun
+      upper(fakultas) + "\n" + upper(program-studi) + "\n" + upper(kota) + "\n" + tahun
     )
   ]
 
@@ -573,15 +576,7 @@
     dy: -3cm,
     text(weight: "bold", size: _sz-bab)[
       #(
-        upper(program-studi)
-          + "\n"
-          + upper(fakultas)
-          + "\n"
-          + upper(institusi)
-          + "\n"
-          + upper(kota)
-          + "\n"
-          + tahun
+        upper(program-studi) + "\n" + upper(fakultas) + "\n" + upper(institusi) + "\n" + upper(kota) + "\n" + tahun
       )
     ],
   )
@@ -1194,7 +1189,10 @@
       {
         h((it.level - 1) * 1cm)
         link(it.element.location())[
-          #if prefix != none { prefix; h(0.5em) }
+          #if prefix != none {
+            prefix
+            h(0.5em)
+          }
           #it.body()
         ]
       },
@@ -1203,7 +1201,7 @@
   }
   outline(
     title: none,
-    depth: 2
+    depth: 2,
   )
 }
 
@@ -1401,6 +1399,16 @@
 // -- GLOBAL VARIABLE
 
 #let bulan-id = (
-  "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-  "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  "Januari",
+  "Februari",
+  "Maret",
+  "April",
+  "Mei",
+  "Juni",
+  "Juli",
+  "Agustus",
+  "September",
+  "Oktober",
+  "November",
+  "Desember",
 )

@@ -268,53 +268,68 @@ tidak dipakai.)
 
 = TINJAUAN PUSTAKA (OPSIONAL)
 
-Bab ini opsional menurut PPTA. Hapus bab ini beserta seluruh isinya jika
-penelitian tidak memakai tinjauan pustaka tersendiri.
+Tinjauan pustaka berisi telaah/ulasan atas pustaka-pustaka yang relevan
+dengan topik tugas akhir untuk mendapatkan informasi yang lengkap terkait
+kemajuan ipteks yang telah diketahui sampai yang terkini (state of the art). Hal ini
+untuk meyakinkan pembaca bahwa tugas akhir yang dilaporkan adalah pengetahuan
+baru yang lebih maju dari pengetahuan sebelumnya. Pustaka yang digunakan dalam
+bab ini ialah acuan primer, diutamakan artikel jurnal dan paten yang relevan dengan
+bidang yang diteliti, terkini, dan asli. Pustaka acuan harus kredibel, dan mutakhir
+(setidaknya 80% dalam 10 tahun terakhir). Diktat dan buku ajar tidak termasuk
+acuan primer. Referensi lama berupa teori umum/mapan tetap dapat
+digunakan. Tinjauan pustaka ditulis dengan ketentuan, jumlah halaman bab
+tersebut tidak melebihi 10% dari total halaman bagian utama naskah dan tidak
+melebihi jumlah halaman Hasil dan Pembahasan. Tinjauan pustaka memuat telaah
+singkat, jelas, dan sistematis tentang kerangka teoretis, kerangka pikir, temuan,
+postulat-postulat, prinsip, asumsi, dan hasil penelitian yang relevan yang melandasi
+topik tugas akhir atau gagasan guna menggali pemahaman mengenai masalah
+kajian tugas akhir dan pemecahan masalahnya. Dalam penelitian bidang ilmu sosial
+dan ekonomi, tinjauan pustaka menjadi dasar penyusunan kerangka analisis baru
+dan hipotesis baru dalam topik karya ilmiah tersebut.
 
-Pustaka yang digunakan dalam bab ini ialah acuan primer, diutamakan artikel
-jurnal dan paten yang relevan dengan bidang yang diteliti, terkini, dan asli
-(_state of the art_). Pustaka acuan harus kredibel dan mutakhir (setidaknya 80%
-dalam 1–10 tahun terakhir). Diktat dan buku ajar tidak termasuk acuan primer.
-Tinjauan pustaka memuat telaah singkat, jelas, dan sistematis tentang kerangka
-teoretis, kerangka pikir, temuan, postulat-postulat, prinsip, asumsi, dan
-hasil-hasil penelitian yang relevan yang melandasi masalah penelitian atau gagasan
-guna menggali pemahaman mengenai masalah penelitian dan pemecahan masalahnya.
+== Judul Subbab 1 (Kata dalam judul diawali huruf kapital dan dicetak tebal)
 
-== Judul Subbab 1
+Uraian dengan deskripsi untuk judul subbab 1
+#set enum(numbering: "a")
++ ...
++ ...
++ ...
+  #set enum(numbering: "1)")
+  + ...
+  + ...
+  + ...
+// #figure(
+//   caption: [Tingkat kekerasan buah pisang raja pada suhu simpan yang berbeda dan pemberian putresina],
+//   kind: table,
+//   table(
+//     columns: (1fr, auto, auto, auto),
+//     align: (left, center, center, center),
+//     table.hline(stroke: 0.75pt),
+//     table.cell(rowspan: 2)[Perlakuan],
+//     table.cell(colspan: 3, align: center)[Kekerasan buah dan kandungan gula pada hari ke-],
+//     table.hline(stroke: 0.5pt, start: 1),
+//     [0], [7], [14],
+//     table.hline(stroke: 0.75pt),
+//     table.cell(colspan: 4, align: center)[Kekerasan buah (mm 50 g#super[-1] detik #super[-1])#super[a]],
+//     [Suhu Simpan], [], [], [],
+//     [#h(1em)15ºC], [9.20a], [13.40a], [11.83a],
+//     [#h(1em)28ºC], [10.64a], [11.22a], [80.43b],
+//     [Putresina], [], [], [],
+//     [#h(1em)Dengan putresina], [12.07a], [13.23a], [11.19a],
+//     [#h(1em)Tanpa putresina], [10.76a], [14.41a], [41.12b],
+//     table.hline(stroke: 0.75pt),
+//     table.cell(colspan: 4)[
+//       #set text(size: 10pt)
+//       #super[a]Angka-angka pada kolom yang sama yang diikuti oleh huruf yang sama tidak berbeda nyata pada taraf uji 5% (uji selang berganda Duncan).
+//     ],
+//   ),
+// )
 
-Isi subbab tinjauan pustaka.
+=== Judul Sub-subbab (Kata dalam judul diawali huruf kapital dan dicetak tidak tebal)
 
-#figure(
-  caption: [Tingkat kekerasan buah pisang raja pada suhu simpan yang berbeda dan pemberian putresina],
-  kind: table,
-  table(
-    columns: (1fr, auto, auto, auto),
-    align: (left, center, center, center),
-    table.hline(stroke: 0.75pt),
-    table.cell(rowspan: 2)[Perlakuan],
-    table.cell(colspan: 3, align: center)[Kekerasan buah dan kandungan gula pada hari ke-],
-    table.hline(stroke: 0.5pt, start: 1),
-    [0], [7], [14],
-    table.hline(stroke: 0.75pt),
-    table.cell(colspan: 4, align: center)[Kekerasan buah (mm 50 g#super[-1] detik #super[-1])#super[a]],
-    [Suhu Simpan], [], [], [],
-    [#h(1em)15ºC], [9.20a], [13.40a], [11.83a],
-    [#h(1em)28ºC], [10.64a], [11.22a], [80.43b],
-    [Putresina], [], [], [],
-    [#h(1em)Dengan putresina], [12.07a], [13.23a], [11.19a],
-    [#h(1em)Tanpa putresina], [10.76a], [14.41a], [41.12b],
-    table.hline(stroke: 0.75pt),
-    table.cell(colspan: 4)[
-      #set text(size: 10pt)
-      #super[a]Angka-angka pada kolom yang sama yang diikuti oleh huruf yang sama tidak berbeda nyata pada taraf uji 5% (uji selang berganda Duncan).
-    ],
-  ),
-)
-
-=== Contoh Sub-subbab
-
-Berikut adalah contoh sub-subbab. Pada sub-subbab ini posisi paragraf lebih
-menjorok dari paragraf di subbab.
+Berikut adalah contoh uraian dengan deskripsi pada sub-subbab. Pada sub-
+subbab ini posisi paragraf lebih menjorok 0,5 cm dari paragraf di
+subbab
 
 == Judul Subbab 2
 
