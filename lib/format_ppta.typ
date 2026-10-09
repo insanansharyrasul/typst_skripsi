@@ -158,16 +158,21 @@
 // ─── Penomoran Halaman ────────────────────────────────────────
 
 // Header mirror: nomor halaman di pojok kanan atas untuk halaman ganjil
-// dan pojok kiri atas untuk halaman genap. Posisi: 2 cm dari atas kertas,
-// 3 cm dari tepi kanan/kiri (Suplemen 1 A butir 3, versi mirror).
+// dan pojok kiri atas untuk halaman genap. Batas atas 2 cm; batas kanan
+// (gasal) 3 cm dan batas kiri (genap) 3 cm (Suplemen 1 A butir 3).
+// Pias kiri teks 4 cm, jadi nomor genap digeser 1 cm ke margin.
 #let _header-mirror(fmt) = context {
-  let n = counter(page).get().first()
-  let s = numbering(fmt, n)
-  set text(font: _font, size: _sz-body)
-  if calc.odd(n) {
-    align(right, s)
-  } else {
-    align(left, s)
+  let cur = here().page()
+  let chap-here = query(heading.where(level: 1)).any(h => h.numbering != none and h.location().page() == cur)
+  if chap-here { none } else {
+    let n = counter(page).get().first()
+    let s = numbering(fmt, n)
+    set text(font: _font, size: _sz-body)
+    if calc.odd(n) {
+      align(right, s)
+    } else {
+      align(left, [#h(-1cm)#s])
+    }
   }
 }
 
@@ -178,8 +183,9 @@
   set page(
     numbering: "i",
     footer: none,
-    header: _header-mirror("i"),
-    header-ascent: 1cm,
+    header: none,
+    // header: _header-mirror("i"),
+    header-ascent: 2cm,
   )
   counter(page).update(1)
   body
@@ -194,7 +200,7 @@
     numbering: "1",
     footer: none,
     header: _header-mirror("1"),
-    header-ascent: 1cm,
+    header-ascent: 2cm,
   )
   counter(page).update(1)
   body
@@ -247,6 +253,9 @@
   // Courier New 11pt (Suplemen 1 A).
   show raw: set text(font: _font-mono, size: _sz-mono)
 
+  // Catatan kaki: 10pt (dotx FootnoteText sz 20).
+  show footnote.entry: set text(font: _font, size: 10pt)
+
   // ── Paragraf ─────────────────────────────────────────────
   // • Jarak baris: 1 spasi (Suplemen 1 A butir 5)
   // • Alinea pertama menjorok 1 cm dari batas kiri bidang tulisan (butir 6)
@@ -296,17 +305,18 @@
         #upper(it.body)
       ],
     )
-    v(_leading)
+    v(0.5cm)
   }
 
   // ── Tampilan Judul Subbab (Level 2) ───────────────────────
   // • Times New Roman 12pt, tebal (bold), kapital tiap kata
   //   (kecuali kata hubung dan kata depan)
-  // • Posisi: kiri (left-aligned)
+  // • Posisi: kiri (left-aligned); judul > 1 baris menggantung 0,7 cm
+  //   (dotx JudulSubbab left 397/hanging 397; baris pertama tetap di tepi kiri)
   // • 2 spasi dari konten di atas, 1 spasi dari konten di bawah
   // (Suplemen 1 A butir 10)
   show heading.where(level: 2): it => {
-    set par(first-line-indent: 0pt, spacing: 0pt, leading: _leading)
+    set par(first-line-indent: 0pt, hanging-indent: 0.7cm, spacing: 0pt, leading: _leading)
     v(2 * _leading)
     text(font: _font, size: _sz-body, weight: "bold")[
       #if it.numbering != none {
@@ -315,7 +325,7 @@
       }
       #it.body
     ]
-    v(_leading)
+    v(0cm)
   }
 
   // ── Tampilan Judul Sub-subbab (Level 3) ───────────────────
@@ -362,13 +372,17 @@
   //   )
   show figure.where(kind: table): set figure.caption(position: top)
   set table(stroke: none) // garis diatur manual dengan table.hline()
+  // Isi tabel 11pt seluruhnya (sel .dotx 11pt); catatan kaki sel
+  // menimpa sendiri ke 10pt via #set text(size: 10pt).
+  show table: set text(font: _font, size: 11pt)
 
   // ── Gambar ───────────────────────────────────────────────
   // • Caption/judul gambar di BAWAH gambar (PPTA Bab VI)
   show figure.where(kind: image): set figure.caption(position: bottom)
 
   // Caption satu baris → center; caption multi-baris → hanging indent kiri.
-  // (Judul tabel: rata tengah; baris kedua sejajar huruf pertama baris pertama.)
+  // (Judul tabel: rata tengah; baris kedua sejajar huruf pertama baris pertama;
+  // jarak nomor–judul 2 pt per Suplemen Ilustrasi Tabel.)
   show figure.caption: it => {
     set par(first-line-indent: 0pt)
     layout(size => context {
@@ -380,7 +394,7 @@
         set align(left)
         grid(
           columns: (auto, 1fr),
-          column-gutter: 0.4em,
+          column-gutter: 2pt,
           align: top,
           prefix, it.body,
         )
@@ -441,24 +455,7 @@
 
   let tahun = str(tahun)
 
-  v(5cm)
-
-  // Judul: Times New Roman 14pt, kapital semua, spasi 1, center
-  text(size: judul-size, weight: "bold")[#upper(judul)]
-
-  v(1.5cm)
-
-  // Jenis tugas akhir
-  text(weight: "bold")[SKRIPSI]
-
-  v(3cm)
-
-  // Nama dan NIM: Times New Roman 14pt
-  text(weight: "bold")[#upper(nama)]
-  v(_leading)
-  text(weight: "bold")[#nim]
-
-  v(3.5cm)
+  v(4cm)
 
   // Logo IPB: diameter 2,5 cm (Suplemen 1 A)
   if logo != none {
@@ -472,17 +469,36 @@
     )
   }
 
-  v(3cm)
+  v(1cm)
+
+  text(size: judul-size, weight: "bold")[INSTITUT PERTANIAN BOGOR]
+
+  v(2cm)
+
+  // Judul: Times New Roman 14pt, kapital semua, spasi 1, center
+  text(size: judul-size, weight: "bold")[#upper(judul)]
+
+  v(1.5cm)
+
+  // Jenis tugas akhir
+  text(weight: "bold")[SKRIPSI]
+
+  v(4cm)
+
+  // Nama dan NIM: Times New Roman 14pt
+  text(weight: "bold")[#upper(nama)]
+  v(0cm)
+  text(weight: "bold")[#nim]
+
+  v(4cm)
 
   // Program Studi, Fakultas/Sekolah, Institusi, Kota, Tahun
   // Times New Roman 14pt
   text(weight: "bold")[
     #(
-      upper(program-studi)
+        upper(fakultas)
         + "\n"
-        + upper(fakultas)
-        + "\n"
-        + upper(institusi)
+        + upper(program-studi)
         + "\n"
         + upper(kota)
         + "\n"
@@ -653,7 +669,7 @@
     #nim
   ]
 
-  v(2em)
+  v(1fr)
 
   align(center)[
     © Hak Cipta milik IPB, tahun #tahun \
@@ -741,7 +757,7 @@
   pembimbing: (),
   isi: [],
 ) = {
-  pagebreak(weak: true)
+  // pagebreak(weak: true)
   set par(
     leading: _leading,
     spacing: _leading,
@@ -750,7 +766,7 @@
   )
   set text(font: _font, size: _sz-body)
 
-  heading(level: 1, numbering: none, outlined: false)[HIGHLIGHTS]
+  heading(level: 1, numbering: none, outlined: false)[_HIGHLIGHTS_]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
 
   v(0.5em)
@@ -805,7 +821,7 @@
 
   v(_leading)
 
-  align(center)[#judul]
+  align(center)[*#judul*]
 }
 
 /// Membuat halaman Graphical Abstract (ketentuan sama, bahasa Inggris).
@@ -817,11 +833,10 @@
   judul: "",
   gambar: none,
 ) = {
-  pagebreak(weak: true)
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   set text(font: _font, size: _sz-body)
 
-  heading(level: 1, numbering: none, outlined: false)[GRAPHICAL ABSTRACT]
+  heading(level: 1, numbering: none, outlined: false)[_GRAPHICAL ABSTRACT_]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
 
   v(0.5em)
@@ -834,7 +849,7 @@
 
   v(_leading)
 
-  align(center)[#judul]
+  align(center)[_*#judul*_]
 }
 
 
@@ -861,7 +876,7 @@
   kata-kunci: "",
 ) = {
   pagebreak(weak: true)
-  set page(header: none)
+  // set page(header: none)
   set par(
     leading: _leading,
     spacing: _leading,
@@ -887,7 +902,7 @@
   }
 
   // Header abstrak: NAMA. Judul. Dibimbing oleh PEMBIMBING.
-  [*#upper(nama).* #judul. Dibimbing oleh #db.]
+  [#upper(nama). #judul. Dibimbing oleh #db.]
 
   v(_leading)
 
@@ -920,7 +935,7 @@
   isi: [],
   keywords: "",
 ) = {
-  set page(header: none)
+  // set page(header: none)
   set par(
     leading: _leading,
     spacing: _leading,
@@ -944,7 +959,7 @@
     pembimbing.slice(0, -1).map(upper).join(", ") + " and " + upper(pembimbing.last())
   }
 
-  emph([*#upper(nama).* #judul. Supervised by #sv.])
+  emph([#upper(nama). #judul. Supervised by #sv.])
 
   v(_leading)
 
@@ -954,7 +969,7 @@
 
   {
     set par(first-line-indent: 0pt)
-    emph([_Keywords:_ #keywords])
+    emph([Keywords: #keywords])
   }
 }
 

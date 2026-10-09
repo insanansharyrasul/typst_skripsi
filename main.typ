@@ -3,17 +3,17 @@
 // -- GLOBAL VARIABLE
 
 // Please fill this with title case like this (not capslock!)
-#let judul_indonesia = "Judul Karya Ilmiah Maksimum Tiga Baris, Lima Belas Kata Tidak Termasuk Kata Depan Dan Kata Sambung"
+#let judul_indonesia = "Judul Karya Ilmiah Maksimum Tiga Baris,Lima Belas Kata Tidak Termasuk Kata Depan Dan Kata Sambung"
 #let judul_english = "Title of Thesis (skripsi)"
 #let nim = "NXXXXXXXXXX"
-#let nama-penulis = "Insan Anshary Rasul"
-#let program-studi = "Program Studi"
-#let fakultas = "Nama Fakultas/Sekolah"
+#let nama-penulis = "NAMA MAHASISWA"
+#let program-studi = "NAMA PROGRAM STUDI"
+#let fakultas = "Fakultas/Sekolah"
 #let pembimbing-id = ("NAMA PEMBIMBING 1", "NAMA PEMBIMBING 2")
 #let pembimbing-en = ("NAME of 1st SUPERVISOR", "NAME of 2nd SUPERVISOR")
 
 // Deklarasi pemakaian kecerdasan buatan (wajib di halaman pernyataan)
-#let ai-pakai = false
+#let ai-pakai = true
 #let ai-alat = "NAMA ALAT/LAYANAN"
 #let ai-alasan = "ALASAN"
 
@@ -44,13 +44,9 @@
   logo: image("assets/logo-ipb.png", width: 2.5cm),
 )
 
-#halaman-judul(
-  judul: judul_indonesia,
-  nama: nama-penulis,
-  program-studi: program-studi,
-  fakultas: fakultas,
-  tahun: date.year(),
-)
+#pagebreak()
+#page()[]
+#pagebreak()
 
 #halaman-pernyataan(
   nama-penulis: nama-penulis,
@@ -63,39 +59,51 @@
   ai-alasan: ai-alasan,
 )
 
-// ── Bagian Awal (nomor halaman Romawi mulai dari Sorotan: i, ii, iii, …) ──
-#show: bagian-awal
+#pagebreak()
+#page()[]
+#pagebreak()
 
+#show: bagian-awal
 #sorotan(
   nama: nama-penulis,
   judul: judul_indonesia,
   pembimbing: pembimbing-id,
   isi: [
-    1. Penelitian ini membahas [topik utama], dengan tujuan untuk [tujuan].
-    2. Penelitian ini menggunakan [metode] untuk [objek kajian].
-    3. Hasil penelitian menunjukkan bahwa [temuan utama].
+    1. Penelitian ini membahas [masukkan topik utama], dengan tujuan untuk [nyatakan tujuan secara jelas dan ringkas].
+    2. Penelitian ini menggunakan [sebutkan metode] untuk menganalisis/menginvestigasi [sebutkan objek kajian].
+    3. Hasil penelitian menunjukkan bahwa [ringkas temuan utama dengan tepat].
+    4. Temuan ini memberikan kontribusi terhadap [bidang/implikasi], serta menawarkan wawasan baru mengenai [aspek spesifik].
+    5. Tugas akhir ini menunjukkan pentingnya [tekankan signifikansi], dan menyarankan potensi penerapan pada [konteks relevan].
   ],
 )
+
+Sorotan/highlights ditulis dalam satu spasi, disusun 3-5 poin, dan tidak lebih dari satu halaman. Setiap poin ditulis maksimal 100 karakter termasuk spasi dan tanda baca. Tidak diperbolehkan mengacu pustaka, gambar, dan tabel. Singkatan hanya dikenalkan jika masih digunakan lagi dalam bagian lain sorotan/highlights.
 
 #highlights(
   nama: nama-penulis,
   judul: judul_english,
   pembimbing: pembimbing-en,
   isi: [
-    1. This study addresses [key topic], aiming to [objective].
-    2. The research employs [methodology] to [subject of study].
-    3. Results indicate that [key findings].
+    1. This study addresses [insert key topic], aiming to [state objective clearly and concisely].
+    2. The research employs [mention methodology] to analyze/investigate [mention subject of study].
+    3. Results indicate that [summarize key findings with precision].
+    4. The findings contribute to [mention the field/implications], offering new insights
+    into [specific aspect].
+    5. This final assignment demonstrates the importance of [highlight significance],
+    suggesting potential applications in [relevant context].
   ],
 )
 
 #abstrak-grafis(
-  judul: "Judul Abstrak Grafis Maksimum Enam Kata",
-  gambar: image("assets/gambar_1.png", width: 80%),
+  judul: "Judul Abstrak Grafis Maksimum Enam Kata,\nTidak Termasuk Kata Depan dan Kata Sambung",
+  gambar: image("assets/gambar_abstrak.png", width: 60%),
 )
 
+Abstrak grafis/graphical abstract terdiri atas sebuah gambar yang secara visual merangkum temuan utama dari tugas akhir. Abstrak grafis ini disusun secara singkat dan berdiri sendiri, menyampaikan tujuan dan hasil penelitian, serta disajikan dengan cara yang menarik secara visual dengan resolusi gambar minimal 300 dpi. Abstrak grafis/graphical abstract ditulis dalam satu halaman. Judul diletakkan di bawah abstrak grafis/graphical abstract. Mahasiswa wajib mendeklarasikan penggunaan AI jika digunakan dalam pembuatan abstrak grafis dan perhatikan penggunaan elemen berhak cipta (lihat Suplemen 6).
+
 #graphical-abstract(
-  judul: "Graphical Abstract Title Maximum Six Words",
-  gambar: image("assets/gambar_1.png", width: 80%),
+  judul: "Graphical Abstract Title Maximum Six Words,\nExcluding Prepositions and Conjunctions",
+  gambar: image("assets/gambar_abstrak.png", width: 60%),
 )
 
 #abstrak(
@@ -103,12 +111,7 @@
   judul: judul_indonesia,
   pembimbing: pembimbing-id,
   isi: [
-    Narasi disusun dalam satu paragraf, isi tidak lebih dari 200 kata, dan ditulis
-    dalam satu halaman untuk abstrak dan _abstract_. Abstrak memuat latar belakang
-    permasalahan (tentatif), tujuan penelitian, metode, hasil penelitian dengan
-    penekanan pada temuan baru, dan implikasi yang disajikan secara informatif dan
-    faktual. Tidak diperbolehkan mengacu pustaka, gambar, dan tabel. Singkatan hanya
-    dikenalkan jika masih digunakan lagi dalam bagian lain Abstrak/_Abstract_.
+    Narasi disusun dalam satu paragraf, isi tidak lebih dari 200 kata, dan ditulis dalam satu halaman untuk abstrak/abstract. Abstrak memuat latar belakang permasalahan (tentatif), tujuan tugas akhir, metode, hasil dengan penekanan pada temuan baru, dan implikasi yang disajikan secara informatif dan faktual. Tidak diperbolehkan mengacu pustaka, gambar, dan tabel. Singkatan hanya dikenalkan jika masih digunakan lagi dalam bagian lain dari abstrak/abstract. Abstrak dalam bahasa Inggris ditulis dengan huruf miring (italic).
   ],
   kata-kunci: [ditulis dalam bahasa Indonesia, disusun berdasarkan abjad, maksimum lima kata atau frasa ini],
 )
@@ -151,6 +154,10 @@
   tanggal-lulus: [#bulan #date.year()],
 )
 
+#pagebreak()
+#page()[]
+#pagebreak()
+
 #prakata[
   Puji dan syukur penulis panjatkan kepada Tuhan Yang Maha Esa atas segala
   karunia-Nya sehingga skripsi ini berhasil diselesaikan. Judul dalam penelitian yang
@@ -173,9 +180,13 @@
   #align(right)[
     Bogor, Bulan Tahun
     #v(2em)
-    _Nama penulis_
+    Nama penulis
   ]
 ]
+
+#pagebreak()
+#page()[]
+#pagebreak()
 
 #daftar-isi()
 #daftar-tabel()    // hapus baris ini jika tabel ≤ 1
@@ -188,63 +199,65 @@
 = PENDAHULUAN
 
 Bab pendahuluan memuat latar belakang atau justifikasi dipilihnya topik
-karya ilmiah tugas akhir, perumusan atau pendekatan penyelesaian masalah,
-tujuan, manfaat, dan ruang lingkup. Di dalam pendahuluan dijelaskan pula
-perumusan atau pendekatan penyelesaian masalah dan alasan pemilihan metode
-yang digunakan. Bergantung pada proses perumusan masalah penelitian, bagian
-Kerangka Pikir dan Hipotesis dapat ditulis di sini, tidak ditulis dalam bab
-tersendiri.
-
-Paparan tidak berbelit-belit atau dimulai dengan latar belakang yang terlalu umum.
-Pernyataan mengenai apa yang diteliti dan apa yang diharapkannya diawali dengan
-pemikiran logis. Tujuan penelitian ditulis di bagian akhir bab ini dengan memilih
-kata kerja yang hasilnya dapat diukur dan dilihat, seperti: _menguraikan,
-menerangkan, membuktikan, menjajaki, menguji, membuktikan, atau menerapkan suatu
-gejala, konsep atau dugaan_, atau bahkan _membuat suatu prototipe_. Jangan
-menggunakan kata kerja mengetahui atau memahami.
+karya ilmiah tugas akhir, perumusan atau pendekatan penyelesaian masalah, tujuan,
+manfaat, dan ruang lingkup. Di dalam pendahuluan dijelaskan perumusan atau
+pendekatan penyelesaian masalah dan alasan pemilihan metode yang digunakan.
+Merujuk pada proses perumusan masalah tugas akhir, bagian Kerangka Pikir dan
+Hipotesis dapat ditulis di sini, tidak ditulis dalam bab tersendiri. Untuk membantu
+mengikuti alur pikir secara skematis, dapat juga dibuat bagan alir kerangka proses
+dan rumusan masalah serta pencapaian tujuan tugas akhir.
 
 == Latar Belakang
 
-Latar Belakang memuat ulasan singkat mengapa penelitian perlu dilakukan. Uraian
-dimulai dengan hal yang unik, fakta, masalah, dan pendapat yang mendasari
-dilakukannya penelitian. Di dalamnya diuraikan juga alasan teoretis dan alasan
-praktis dari perlunya penelitian dilakukan, dan bagaimana masalah tersebut dapat
-dipecahkan dan manfaat dari penyelesaian masalah.
+Latar belakang berisi penjelasan alasan memilih topik dan pentingnya kajian
+tugas akhir itu dilakukan berdasarkan alasan teoretis dan praktis, serta bagaimana
+masalah tersebut dapat diatasi dan manfaat dari penyelesaian masalah. Paparan
+tidak berbelit-belit atau dimulai dengan latar belakang yang umum. Pernyataan
+mengenai apa yang diteliti dan apa yang diharapkan diawali dengan pemikiran
+logis. Pemaparan latar belakang harus sistematis, logis, serta disertai data,
+informasi, dan telaah pustaka dari sumber primer, mutakhir, dan relevan yang dapat
+dipertanggungjawabkan secara ilmiah. Masalah penelitian yang lebih spesifik
+dirumuskan pada bagian rumusan masalah.
 
 == Rumusan Masalah
 
-Berbekalkan latar belakang dan kerangka pikir, masalah yang diteliti dapat
-dirumuskan. Masalah yang dirumuskan harus jelas dan fokus pada kata kunci utama
-yang unik. Dalam merumuskan masalah, deskripsi lokasi studi terutama keunikannya
-sudah termasuk dalam pertimbangan. Untuk memperjelas perumusan masalah, dapat
-juga dibuat beberapa pertanyaan yang hendak dijawab dalam penelitian itu.
+Rumusan masalah merupakan pernyataan ringkas mengenai masalah yang
+akan diselesaikan dan cara mengatasinya untuk menjawab tujuan tugas akhir.
+Masalah yang diteliti dapat dirumuskan karena berbagai sebab, seperti adanya
+kesenjangan (gap), tantangan, kesangsian, ketidakjelasan, dan keingintahuan secara
+akademik yang berkaitan dengan fenomena alam, sosial, dan ekonomi. Dalam
+pernyataan ringkas tersebut harus tercakup pendekatan yang digunakan dalam
+perumusan masalah
 
 == Tujuan
 
-Pernyataan tujuan penelitian ialah pernyataan singkat dan jelas tentang tujuan
-yang akan dicapai sebagai upaya pemecahan masalah maupun memahami gejala
-(fenomena) yang dijelaskan dalam latar belakang. Gunakan kata kerja yang hasilnya
-dapat diukur. Bila ada atau memungkinkan, dapat ditulis manfaat atau kegunaan
-hasil penelitian bagi kepentingan pengembangan ipteks, pertimbangan dalam
-mengambil kebijakan, kepentingan profesi maupun masyarakat pada umumnya.
-
-#figure(
-  image("assets/gambar_1.png", width: 5cm),
-  caption: "Contoh gambar",
-)
+Pernyataan tujuan tugas akhir ialah pernyataan singkat dan jelas tentang
+tujuan yang akan dicapai sebagai upaya pemecahan masalah maupun memahami
+gejala (fenomena) yang dijelaskan dalam latar belakang. Tujuan merupakan
+pemandu atau arah untuk merencanakan dan melaksanakan kajian tugas akhir.
+Tujuan penelitian ditulis dengan memilih kata kerja yang hasilnya dapat diukur dan
+dilihat, seperti: menguraikan, menerangkan, membuktikan, menjajaki, menguji,
+membuktikan, atau menerapkan suatu gejala, konsep atau dugaan, atau bahkan
+membuat suatu prototipe. Jangan menggunakan kata kerja mengetahui atau
+memahami. Masalah dan tujuan penelitian harus terkait dan konsisten.
 
 == Manfaat
 
-Uraian manfaat penelitian mencakup kepentingan pengembangan ipteks, pertimbangan
-dalam mengambil kebijakan, kepentingan profesi maupun masyarakat pada umumnya.
+Manfaat merupakan dampak positif (kegunaan) dari hasil karya ilmiah tugas
+akhir bagi bidang ipteks, pembangunan, dan masyarakat. Manfaat utama dari hasil
+tugas akhir adalah menambah khasanah ilmu pengetahuan dalam bentuk pustaka
+sebagai sumber acuan/referensi untuk pengembangan ipteks, para pengambil
+keputusan baik di industri maupun pemerintah dan lembaga untuk menyusun
+kebijakan baru, serta masyarakat umum. Manfaat dinyatakan dengan kata kerja
+yang lugas dan logis.
 
-== Ruang Lingkup
+== Ruang Lingkup (opsional)
 
 Ruang lingkup penelitian menjelaskan batasan-batasan dari penelitian yang
 dilakukan agar fokus dan terarah sesuai tujuan yang telah ditetapkan. (Opsional;
 hapus subbab ini jika tidak dipakai.)
 
-== Hipotesis
+== Hipotesis (opsional)
 
 Hipotesis dapat ditulis secara eksplisit atau tersirat sesuai bidang ipteks yang
 relevan. Hipotesis dapat menjadi bagian dari pendahuluan (untuk bidang sains,
@@ -253,7 +266,7 @@ teknik, dan kesehatan), atau merupakan bagian akhir dari tinjauan pustaka
 tidak dipakai.)
 
 
-= TINJAUAN PUSTAKA
+= TINJAUAN PUSTAKA (OPSIONAL)
 
 Bab ini opsional menurut PPTA. Hapus bab ini beserta seluruh isinya jika
 penelitian tidak memakai tinjauan pustaka tersendiri.
