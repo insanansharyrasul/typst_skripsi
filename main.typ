@@ -3,7 +3,7 @@
 // -- GLOBAL VARIABLE
 
 // Please fill this with title case like this (not capslock!)
-#let judul_indonesia = "Judul Karya Ilmiah Maksimum Tiga Baris,Lima Belas Kata Tidak Termasuk Kata Depan Dan Kata Sambung"
+#let judul_indonesia = "Judul Karya Ilmiah Maksimum Tiga Baris, Lima Belas Kata Tidak Termasuk Kata Depan Dan Kata Sambung"
 #let judul_english = "Title of Thesis (skripsi)"
 #let nim = "NXXXXXXXXXX"
 #let nama-penulis = "NAMA MAHASISWA"
@@ -161,7 +161,7 @@ Abstrak grafis/graphical abstract terdiri atas sebuah gambar yang secara visual 
 #prakata[
   Puji dan syukur penulis panjatkan kepada Tuhan Yang Maha Esa atas segala
   karunia-Nya sehingga skripsi ini berhasil diselesaikan. Judul dalam penelitian yang
-  dilaksanakan sejak bulan .... sampai bulan .... ini ialah ...........
+  dilaksanakan sejak bulan .... 20XX sampai bulan .... 20XX ini ialah ...........
 
   Terima kasih penulis ucapkan kepada para pembimbing, ... (nama lengkap dan gelar)
   yang telah membimbing dan banyak memberi saran. Ucapan terima kasih juga
@@ -173,8 +173,11 @@ Abstrak grafis/graphical abstract terdiri atas sebuah gambar yang secara visual 
   terima kasih juga disampaikan kepada ayah, ibu, serta seluruh keluarga
   yang telah memberikan dukungan, doa, dan kasih sayangnya .... dan seterusnya.
 
-  Semoga tugas akhir ini bermanfaat bagi pihak yang membutuhkan dan bagi kemajuan
-  ilmu pengetahuan.
+  Semoga tugas akhir ini bermanfaat bagi pihak yang membutuhkan dan bagi
+  kemajuan ilmu pengetahuan.
+
+  Catatan: Ucapan terima kasih diberikan hanya kepada pihak-pihak yang secara
+  langsung berkontribusi terhadap pengumpulan data dan penulisan tugas akhir.
 
   #v(1em)
   #align(right)[
@@ -253,9 +256,9 @@ yang lugas dan logis.
 
 == Ruang Lingkup (opsional)
 
-Ruang lingkup penelitian menjelaskan batasan-batasan dari penelitian yang
-dilakukan agar fokus dan terarah sesuai tujuan yang telah ditetapkan. (Opsional;
-hapus subbab ini jika tidak dipakai.)
+Tugas akhir sering kali dihadapkan pada keterbatasan data, dana, waktu,
+metode, bahkan teori. Oleh karena itu, tugas akhir perlu dengan tegas menunjukkan
+ruang lingkup dengan mempertimbangkan keterbatasan tersebut.
 
 == Hipotesis (opsional)
 
@@ -287,7 +290,7 @@ kajian tugas akhir dan pemecahan masalahnya. Dalam penelitian bidang ilmu sosial
 dan ekonomi, tinjauan pustaka menjadi dasar penyusunan kerangka analisis baru
 dan hipotesis baru dalam topik karya ilmiah tersebut.
 
-== Judul Subbab 1 (Kata dalam judul diawali huruf kapital dan dicetak tebal)
+== Judul Subbab (Kata dalam judul diawali huruf kapital dan dicetak tebal)
 
 Uraian dengan deskripsi untuk judul subbab 1
 #set enum(numbering: "a")
@@ -329,15 +332,19 @@ Uraian dengan deskripsi untuk judul subbab 1
 
 Berikut adalah contoh uraian dengan deskripsi pada sub-subbab. Pada sub-
 subbab ini posisi paragraf lebih menjorok 0,5 cm dari paragraf di
-subbab
+subbab.
 
 == Judul Subbab 2
 
-Isi subbab tinjauan pustaka.
+Berikut adalah contoh uraian dengan deskripsi pada subbab.
+
+== Judul Subbab 3
+
+Berikut adalah contoh uraian dengan deskripsi pada subbab.
 
 #figure(
-  caption: [Contoh judul gambar lebih dari satu baris maka baris kedua dimulai tepat di bawah huruf pertama judul gambar],
-  image("assets/gambar_1.png"),
+  caption: [Mikrograf mukosa lambung trenggiling (_Manis javanica_). (A) Seluruh permukaan mukosa lambung trenggiling dilapisi oleh epitel pipih banyak-lapis yang mengalami keratinisasi.],
+  image("assets/gambar_1.png", width: 80%),
 )
 
 
@@ -351,7 +358,7 @@ research_), pemodelan, analisis suatu teori, atau kombinasi dari berbagai jenis
 penelitian tersebut. Untuk penelitian yang menggunakan metode kualitatif, jelaskan
 pendekatan yang digunakan, proses pengumpulan dan analisis informasi, dan proses
 penafsiran hasil penelitian. Maksud dari perincian ini ialah untuk menjamin
-keterulangan hasil. @smith2020novel
+keterulangan hasil. Berikut contoh subbab metode penelitian.
 
 == Waktu dan Tempat
 
@@ -371,8 +378,51 @@ arahan pembimbing.
 
 == Hasil
 
+Hasil menampilkan data/temuan dan dapat dibagi dalam beberapa subbab sesuai
+dengan tujuan. Data dapat disajikan dengan ilustrasi dalam bentuk Tabel atau
+Gambar (peta, denah, foto, diagram). Ilustrasi harus mampu berdiri sendiri,
+artinya mudah dipahami pembaca tanpa harus merujuk teks. Tujuannya adalah
+membantu pembaca memahami data dan menarik informasi penting dengan cepat
+(_storytelling with data_). Semua ilustrasi harus diletakkan sedekat-dekatnya
+dengan teks yang menyatakan keberadaannya.
+
+Perujukan pada ilustrasi dinyatakan di dalam paragraf sebelum tabel atau
+gambar. Kata “tabel” dan “gambar” diawali dengan huruf kapital bila diikuti
+nomor. Nomor tabel atau gambar berurut sesuai dengan urutan kemunculannya
+dalam tubuh tulisan. Contohnya adalah sebagai berikut: ... seperti ditunjukkan
+pada Gambar 5; ... mendekati bentuk sigmoid (Gambar 5); ... meningkat dengan
+pesat (Tabel 3); ...(lihat Lampiran 1).
+
+#figure(
+  caption: [Tingkat kekerasan dan kandungan gula buah pisang ambon pada suhu simpan yang berbeda dan pemberian putresina],
+  kind: table,
+  table(
+    columns: (1fr, auto, auto, auto),
+    align: (left, center, center, center),
+    table.hline(stroke: 0.75pt),
+    [*Perlakuan*], [*0*], [*7*], [*14*],
+    table.hline(stroke: 0.75pt),
+    [15 ºC], [10,20 a], [13,40 a], [11,83 a],
+    [28 ºC], [10,64 a], [14,22 a], [88,43 b],
+    [Dengan putresina], [11,19 a], [13,23 a], [21,19 a],
+    [Tanpa putresina], [10,76 a], [14,40 a], [41,82 b],
+    table.hline(stroke: 0.75pt),
+  ),
+)
+
 == Pembahasan
 
+Pembahasan merupakan interpretasi atau penjelasan atas data hasil kegiatan
+tugas akhir. Dalam pembahasan, pernyataan-pernyataan dalam paragraf dikemas
+dengan baik, dimulai dari pendapat sendiri di awal paragraf, diikuti dengan
+dukungan pustaka, dan diakhiri dengan kalimat penyimpulan. Argumentasi
+dikemukakan secara singkat dan logis yang difokuskan untuk menjawab tujuan
+dan menguji hipotesis (jika ada).
+
+Pembahasan berupaya menunjukkan aspek-aspek baru yang ditemukan dan
+merupakan satu kesatuan. Pembahasan juga dapat mengemukakan keterbatasan
+dalam kegiatan tugas akhir yang dilaksanakan. Pembahasan diakhiri dengan
+kalimat positif, tegas, dan kuat.
 
 = SIMPULAN DAN SARAN
 
@@ -429,7 +479,7 @@ perbaikan asumsi yang diambil sehingga didapatkan hasil yang lebih baik.
   #figure(
     kind: "lampiran",
     supplement: [Lampiran],
-    caption: [Umur, indeks luas daun, dan hasil biji kering jagung yang ditanam pada lima ketinggian tempat],
+    caption: [Penguasaan pulau berpenghuni di Kepulauan Seribu],
   )[
     #table(
       columns: (auto, auto, auto, auto),
