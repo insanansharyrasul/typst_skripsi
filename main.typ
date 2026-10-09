@@ -290,6 +290,14 @@ kajian tugas akhir dan pemecahan masalahnya. Dalam penelitian bidang ilmu sosial
 dan ekonomi, tinjauan pustaka menjadi dasar penyusunan kerangka analisis baru
 dan hipotesis baru dalam topik karya ilmiah tersebut.
 
+Contoh sumber yang dapat digunakan dalam telaah pustaka meliputi pengelolaan
+ruang terbuka biru untuk pengendalian banjir @arifin2023manajemen, metode
+co-culture untuk mengkaji metabolit sekunder bakteri laut @aulia2024utilizing,
+serta enkapsulasi probiotik @rajam2022encapsulation. Penyusunan judul artikel
+ilmiah juga dapat dibandingkan lintas bidang @brett2025titles, sedangkan kajian
+platform CBT berbasis avatar dapat menjadi contoh penelitian pada bidang digital
+dan kesehatan mental @pezzino2026working.
+
 == Judul Subbab (Kata dalam judul diawali huruf kapital dan dicetak tebal)
 
 Uraian dengan deskripsi untuk judul subbab 1
@@ -426,6 +434,13 @@ pesat (Tabel 3); ...(lihat Lampiran 1).
   ],
 )
 
+Penempatan ilustrasi (tabel dan gambar) di dalam teks memerlukan perhatian khusus untuk memastikan kualitas visualisasi ilmiah, keterbacaan, dan estetika.  Pengaturan yang tepat menjamin pembaca dapat dengan mudah menghubungkan teks dengan ilustrasi yang disajikan. Berikut adalah panduan umum tentang penempatan ilustrasi.
+
+#set enum(numbering: "a.")
+
++ Kedekatan dengan teks rujukan: Setiap ilustrasi ditempatkan sedekat mungkin setelah kalimat di dalam teks yang merujuk atau membahas ilustrasi tersebut.  Hal ini akan meminimalkan gangguan alur baca dan memudahkan pembaca mengaitkan informasi.
++ Posisi peletakan ideal: Ilustrasi diletakkan di tengah halaman secara horizontal, memanfaatkan ruang yang tersedia. Ilustrasi diposisikan sedemikian rupa sehingga judul ilustrasi berada di satu halaman yang sama. Penting juga untuk tidak meninggalkan ruang kosong setelah ilustrasi dan memastikan ada teks/paragraf yang mengikutinya.
++ Efisiensi ruang dan orientasi: Ilustrasi disajikan dan diatur agar muat dalam satu halaman. Jika diperlukan, orientasi halaman bisa diubah menjadi lanskap untuk mengakomodasi ilustrasi yang lebar. Untuk tabel, format yang pendek dan lebar lebih disukai daripada yang panjang dan sempit. Apabila tabel dengan baris yang banyak tidak dapat dihindari, judul kolom berulang (repeat header row) bisa digunakan, sehingga tiap halaman sambungan memiliki judul kolom.
 == Pembahasan
 
 Pembahasan merupakan interpretasi atau penjelasan atas data hasil kegiatan
@@ -444,26 +459,29 @@ kalimat positif, tegas, dan kuat.
 
 == Simpulan
 
-Simpulan merupakan jawaban dari tujuan yang sudah ditentukan dan tidak
-dimaksudkan sebagai ringkasan hasil. Dalam Simpulan, penulis harus dan hanya
-menjawab masalah dan tujuan penelitian yang telah dirumuskan pada Pendahuluan.
-Simpulan merupakan generalisasi dari hasil penelitian dan argumentasi penulis,
-atau pernyataan singkat yang merupakan hakikat dari bab Hasil dan Pembahasan atau
-hasil pengujian berbagai hipotesis yang berkaitan.
-
-Simpulan merupakan hasil penelitian yang boleh jadi telah dikemukakan dalam
-perumusan masalah dan telah diberi jawaban sementara berupa hipotesis. Dalam
-menulis simpulan, penulis harus membedakan dugaan, temuan, dan simpulan hasil
-studi. Pernyataan simpulan harus dilakukan secara cermat dan hati-hati.
+Simpulan ditulis dalam bentuk paragraf yang efektif sesuai dengan tujuan
+penelitian. Simpulan merupakan jawaban dari tujuan yang sudah ditentukan dan
+tidak dimaksudkan sebagai ringkasan hasil. Simpulan merupakan hasil penelitian
+yang boleh jadi telah dikemukakan dalam perumusan masalah dan telah diberi
+jawaban sementara berupa hipotesis. Dalam menulis simpulan, penulis harus
+membedakan dugaan, temuan, dan simpulan hasil studi. Pernyataan simpulan harus
+dilakukan secara cermat dan hati-hati. Penyampaian simpulan ini dapat dilakukan
+sebanyak 3 kali, yakni dalam pembahasan, simpulan, dan abstrak sehingga
+diperlukan kecermatan untuk menyajikannya dengan ungkapan yang berbeda-beda.
 
 == Saran
 
-Saran seyogianya mengarah ke implikasi atau tindakan lanjutan yang harus
-dilakukan sehubungan dengan temuan atau simpulan penulis. Saran yang dikemukakan
-harus berkaitan dengan pelaksanaan atau hasil penelitian. Dengan demikian saran
-ini mengemukakan hal-hal yang perlu diteliti lebih lanjut terutama untuk
-memperbaiki kelemahan atau kekurangan dalam penelitian yang dilakukan atau
-perbaikan asumsi yang diambil sehingga didapatkan hasil yang lebih baik.
+Saran sebaiknya mengarah ke implikasi atau tindakan lanjutan yang harus
+dilakukan sehubungan dengan temuan atau simpulan penulis. Saran yang
+dikemukakan harus berkaitan dengan pelaksanaan atau hasil penelitian. Dengan
+demikian saran ini mengemukakan hal-hal yang perlu diteliti lebih lanjut terutama
+untuk memperbaiki kelemahan atau kekurangan dalam penelitian yang dilakukan
+atau perbaikan asumsi yang diambil sehingga didapatkan hasil yang lebih baik. Jadi,
+saran tersebut harus diuraikan secara spesifik. Jangan menyarankan hal-hal yang
+tidak dianalisis dan dibahas dalam penelitian serta terkesan menggurui atau
+memuaskan keinginan peneliti. Untuk penelitian yang berkaitan dengan
+permasalahan kebijakan, tidak perlu menyarankan kebijakan yang tidak berkaitan
+dengan hasil penelitian. @smith2020novel
 
 #daftar-pustaka("reference.bib", style: "ipb.csl")
 
