@@ -1,3 +1,3 @@
-# WIP
+It's kinda done, but im too lazy to make the README.md
 
-Please wait, I currently only exporting the dotx and pdf to markdown...
+So for now this is enough, ill do something about this later.
