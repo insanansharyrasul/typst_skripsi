@@ -160,7 +160,8 @@
 // Header mirror: nomor halaman di pojok kanan atas untuk halaman ganjil
 // dan pojok kiri atas untuk halaman genap. Batas atas 2 cm; batas kanan
 // (gasal) 3 cm dan batas kiri (genap) 3 cm (Suplemen 1 A butir 3).
-// Pias kiri teks 4 cm, jadi nomor genap digeser 1 cm ke margin.
+// Dengan margin inside:4cm/outside:3cm, tepi luar selalu 3 cm sehingga
+// align kanan/kiri langsung memenuhi batas tanpa geseran manual.
 #let _header-mirror(fmt) = context {
   let cur = here().page()
   let chap-here = query(heading.where(level: 1)).any(h => h.numbering != none and h.location().page() == cur)
@@ -171,7 +172,7 @@
     if calc.odd(n) {
       align(right, s)
     } else {
-      align(left, [#h(-1cm)#s])
+      align(left, s)
     }
   }
 }
@@ -223,14 +224,16 @@
 ) = {
   // ── Kertas & Pias (Margin) ────────────────────────────────
   // A4: 21,0 cm × 29,7 cm, HVS 80 gram, putih (Suplemen 1 A)
-  // Pias kiri 4 cm; kanan, atas, bawah masing-masing 3 cm.
+  // Pias sisi jilid 4 cm; sisi luar, atas, bawah masing-masing 3 cm.
+  // inside/outside = mirror otomatis untuk cetak bolak-balik (butir 4):
+  // halaman gasal kiri 4 cm, halaman genap kanan 4 cm.
   // Dokumen digital: latar putih standar (tidak ada warna sampul
   // per fakultas; warna karton hanya untuk cetak fisik opsional).
   set page(
     paper: "a4",
     margin: (
-      left: 4cm,
-      right: 3cm,
+      inside: 4cm,
+      outside: 3cm,
       top: 3cm,
       bottom: 3cm,
     ),
@@ -266,6 +269,14 @@
     first-line-indent: 1cm,
     justify: true,
   )
+
+  // ── Paragraf Bertingkat & Rincian (butir 7–8) ──────────────
+  // Rincian dalam subbab/sub-subbab memakai huruf a, b, c (butir 8)
+  // dan tiap tingkat menjorok 0,5 cm dari paragraf di atasnya (butir 7).
+  // Default enum/list di sini a, b, c + indent 0,5 cm; tingkat
+  // berikutnya dibungkus #bertingkat[...] agar tambah 0,5 cm lagi.
+  set enum(numbering: "a.", indent: 0.5cm)
+  set list(indent: 0.5cm)
 
   // ── Penomoran Heading ─────────────────────────────────────
   // Level 1 (Bab)        → angka Romawi kapital, contoh: II
@@ -324,7 +335,7 @@
       }
       #it.body
     ]
-    v(0cm)
+    v(_leading)
   }
 
   // ── Tampilan Judul Sub-subbab (Level 3) ───────────────────
@@ -343,15 +354,13 @@
     )
     v(1.5 * _leading)
 
-    // Geser seluruh blok heading ke kanan
-    pad(left: 0.8cm)[
-      #text(font: _font, size: _sz-body, weight: "regular")[
-        #if it.numbering != none {
-          context counter(heading).display("1.1.1")
-          h(0.75em)
-        }
-        #it.body
-      ]
+    // Judul diketik di tepi kiri (Suplemen 1 A butir 11), tanpa indentasi.
+    text(font: _font, size: _sz-body, weight: "regular")[
+      #if it.numbering != none {
+        context counter(heading).display("1.1.1")
+        h(0.75em)
+      }
+      #it.body
     ]
     v(_leading)
   }
@@ -1236,7 +1245,6 @@
 /// Membuat halaman Daftar Gambar otomatis.
 /// Tampilkan jika jumlah gambar > 1 (PPTA Tabel 4).
 #let daftar-gambar() = {
-  pagebreak()
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   heading(level: 1, numbering: none, outlined: true)[DAFTAR GAMBAR]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
@@ -1263,7 +1271,6 @@
 
 /// Membuat halaman Daftar Lampiran otomatis (tampilkan jika lampiran > 1).
 #let daftar-lampiran() = {
-  pagebreak()
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   heading(level: 1, numbering: none, outlined: true)[DAFTAR LAMPIRAN]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
