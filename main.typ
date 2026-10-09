@@ -1,14 +1,26 @@
-#import "lib/format_ppki.typ": *
+#import "lib/format_ppta.typ": *
 
 // -- GLOBAL VARIABLE
 
 // Please fill this with title case like this (not capslock!)
 #let judul_indonesia = "Judul Karya Ilmiah Maksimum Tiga Baris, Lima Belas Kata Tidak Termasuk Kata Depan Dan Kata Sambung"
 #let judul_english = "Title of Thesis (skripsi)"
-#let nim = "NXXXXXXXXXX" 
+#let nim = "NXXXXXXXXXX"
 #let nama-penulis = "Insan Anshary Rasul"
 #let program-studi = "Program Studi"
 #let fakultas = "Nama Fakultas/Sekolah"
+#let pembimbing-id = ("NAMA PEMBIMBING 1", "NAMA PEMBIMBING 2")
+#let pembimbing-en = ("NAME of 1st SUPERVISOR", "NAME of 2nd SUPERVISOR")
+
+// Deklarasi pemakaian kecerdasan buatan (wajib di halaman pernyataan)
+#let ai-pakai = false
+#let ai-alat = "NAMA ALAT/LAYANAN"
+#let ai-alasan = "ALASAN"
+
+// Watermark IPB untuk dokumen digital (opacity 50%, sisi kiri tiap lembar).
+// Unduh panduan: https://ipb.link/pengesahan-tugasakhir
+// Contoh: #let watermark = image("assets/watermark-ipb.png", width: 5cm)
+#let watermark = none
 
 // The date time of your paper is made
 #let date = datetime(year: 2026, month: 6, day: 30)
@@ -18,14 +30,8 @@
 
 
 
-#show: ppki.with(
-  judul: judul_indonesia,
-  nama-penulis: nama-penulis,
-  nim: nim,
-  program-studi: program-studi,
-  fakultas: fakultas,
-  tahun: date.year(),
-  jenis-karya: "skripsi",
+#show: ppta.with(
+  watermark: watermark,
 )
 
 #halaman-sampul(
@@ -41,7 +47,6 @@
 #halaman-judul(
   judul: judul_indonesia,
   nama: nama-penulis,
-  nim: nim,
   program-studi: program-studi,
   fakultas: fakultas,
   tahun: date.year(),
@@ -51,17 +56,52 @@
   nama-penulis: nama-penulis,
   nim: nim,
   judul: judul_indonesia,
-  jenis-karya: "skripsi",
   tanggal: [Bogor, #bulan #date.year()],
+  tahun: date.year(),
+  ai-pakai: ai-pakai,
+  ai-alat: ai-alat,
+  ai-alasan: ai-alasan,
 )
 
-// ── Bagian Awal (nomor halaman Romawi: i, ii, iii, …) ──
+// ── Bagian Awal (nomor halaman Romawi mulai dari Sorotan: i, ii, iii, …) ──
 #show: bagian-awal
+
+#sorotan(
+  nama: nama-penulis,
+  judul: judul_indonesia,
+  pembimbing: pembimbing-id,
+  isi: [
+    1. Penelitian ini membahas [topik utama], dengan tujuan untuk [tujuan].
+    2. Penelitian ini menggunakan [metode] untuk [objek kajian].
+    3. Hasil penelitian menunjukkan bahwa [temuan utama].
+  ],
+)
+
+#highlights(
+  nama: nama-penulis,
+  judul: judul_english,
+  pembimbing: pembimbing-en,
+  isi: [
+    1. This study addresses [key topic], aiming to [objective].
+    2. The research employs [methodology] to [subject of study].
+    3. Results indicate that [key findings].
+  ],
+)
+
+#abstrak-grafis(
+  judul: "Judul Abstrak Grafis Maksimum Enam Kata",
+  gambar: image("assets/gambar_1.png", width: 80%),
+)
+
+#graphical-abstract(
+  judul: "Graphical Abstract Title Maximum Six Words",
+  gambar: image("assets/gambar_1.png", width: 80%),
+)
 
 #abstrak(
   nama: nama-penulis,
   judul: judul_indonesia,
-  pembimbing: ("NAMA PEMBIMBING 1", "NAMA PEMBIMBING 2"),
+  pembimbing: pembimbing-id,
   isi: [
     Narasi disusun dalam satu paragraf, isi tidak lebih dari 200 kata, dan ditulis
     dalam satu halaman untuk abstrak dan _abstract_. Abstrak memuat latar belakang
@@ -76,7 +116,7 @@
 #abstract-en(
   nama: nama-penulis,
   judul: judul_english,
-  pembimbing: ("NAME of 1st SUPERVISOR", "NAME of 2nd SUPERVISOR"),
+  pembimbing: pembimbing-en,
   isi: [
     Narrative is written in a single paragraph, no more than 200 words, and
     presented in one page for the abstract and _abstract_. The abstract contains
@@ -89,21 +129,8 @@
   keywords: [written in English, arranged alphabetically, maximum five words or phrases],
 )
 
-#halaman-hak-cipta(tahun: date.year())
-
-#halaman-judul-dalam(
-  judul: judul_indonesia,
-  nama: nama-penulis,
-  nim: nim,
-  jenis-karya: "skripsi",
-  program-studi: program-studi,
-  fakultas: fakultas,
-  tahun: date.year(),
-)
-
 #halaman-penguji(
   penguji: ("Nama lengkap dan gelar", "Nama lengkap dan gelar"),
-  judul: "Tim Penguji pada Ujian Skripsi:",
 )
 
 
@@ -112,37 +139,34 @@
   judul: judul_indonesia,
   nama-penulis: nama-penulis,
   nim: nim,
-  jenis-karya: "skripsi",
   program-studi: program-studi,
   pembimbing: ("Nama lengkap dan gelar", "Nama lengkap dan gelar"),
   ketua: "Nama lengkap dan gelar",
   ketua-label: "Ketua Program Studi:",
   ketua-nip: "..............................",
   dekan: "Nama lengkap dan gelar",
-  dekan-label: "Ketua Departemen .....:",
+  dekan-label: "Ketua Departemen/Wakil Dekan Bidang Akademik dan Kemahasiswaan:",
   dekan-nip: "..............................",
   tanggal-ujian: [#bulan #date.year()],
   tanggal-lulus: [#bulan #date.year()],
 )
 
 #prakata[
-  Puji dan syukur penulis panjatkan kepada Allah subhanaahu wa ta'ala atas segala
-  karunia-Nya sehingga karya ilmiah ini berhasil diselesaikan. Tema yang dipilih
-  dalam penelitian yang dilaksanakan sejak bulan .... sampai bulan ....  ini
-  ialah .........., dengan judul "#judul_indonesia".
+  Puji dan syukur penulis panjatkan kepada Tuhan Yang Maha Esa atas segala
+  karunia-Nya sehingga skripsi ini berhasil diselesaikan. Judul dalam penelitian yang
+  dilaksanakan sejak bulan .... sampai bulan .... ini ialah ...........
 
   Terima kasih penulis ucapkan kepada para pembimbing, ... (nama lengkap dan gelar)
   yang telah membimbing dan banyak memberi saran. Ucapan terima kasih juga
   disampaikan kepada pembimbing akademik, moderator seminar, dan penguji luar komisi
-  pembimbing. Di samping itu, penghargaan penulis sampaikan kepada ... (nama lengkap
+  pembimbing. Penghargaan penulis sampaikan kepada ... (nama lengkap
   dan gelar dari lembaga/instansi/perusahaan yang telah memberi izin penelitian),
   (nama dan gelar atau bapak/ibu jika tidak ada gelar) beserta staf Laboratorium
   ..... dan seterusnya .... yang telah membantu selama pengumpulan data. Ungkapan
   terima kasih juga disampaikan kepada ayah, ibu, serta seluruh keluarga
-  (istri/suami/anak jika sudah menikah) yang telah memberikan dukungan, doa, dan
-  kasih sayangnya .... dan seterusnya.
+  yang telah memberikan dukungan, doa, dan kasih sayangnya .... dan seterusnya.
 
-  Semoga karya ilmiah ini bermanfaat bagi pihak yang membutuhkan dan bagi kemajuan
+  Semoga tugas akhir ini bermanfaat bagi pihak yang membutuhkan dan bagi kemajuan
   ilmu pengetahuan.
 
   #v(1em)
@@ -163,11 +187,13 @@
 
 = PENDAHULUAN
 
-Bab pendahuluan memuat latar belakang atau alasan kuat dilakukannya penelitian,
-tujuan, dan hipotesis jika ada. Di dalam pendahuluan dijelaskan pula perumusan
-atau pendekatan penyelesaian masalah dan alasan pemilihan metode yang digunakan.
-Bergantung pada proses perumusan masalah penelitian, bagian Kerangka Pikir dan
-Hipotesis dapat ditulis di sini, tidak ditulis dalam bab tersendiri.
+Bab pendahuluan memuat latar belakang atau justifikasi dipilihnya topik
+karya ilmiah tugas akhir, perumusan atau pendekatan penyelesaian masalah,
+tujuan, manfaat, dan ruang lingkup. Di dalam pendahuluan dijelaskan pula
+perumusan atau pendekatan penyelesaian masalah dan alasan pemilihan metode
+yang digunakan. Bergantung pada proses perumusan masalah penelitian, bagian
+Kerangka Pikir dan Hipotesis dapat ditulis di sini, tidak ditulis dalam bab
+tersendiri.
 
 Paparan tidak berbelit-belit atau dimulai dengan latar belakang yang terlalu umum.
 Pernyataan mengenai apa yang diteliti dan apa yang diharapkannya diawali dengan
@@ -215,27 +241,31 @@ dalam mengambil kebijakan, kepentingan profesi maupun masyarakat pada umumnya.
 == Ruang Lingkup
 
 Ruang lingkup penelitian menjelaskan batasan-batasan dari penelitian yang
-dilakukan agar fokus dan terarah sesuai tujuan yang telah ditetapkan.
+dilakukan agar fokus dan terarah sesuai tujuan yang telah ditetapkan. (Opsional;
+hapus subbab ini jika tidak dipakai.)
 
 == Hipotesis
 
 Hipotesis dapat ditulis secara eksplisit atau tersirat sesuai bidang ipteks yang
-relevan. Hipotesis dapat menjadi bagian dari pendahuluan (untuk bidang eksakta
-atau kajian eksperimental), atau merupakan bagian akhir dari tinjauan pustaka
-(untuk bidang sosial dan ekonomi).
+relevan. Hipotesis dapat menjadi bagian dari pendahuluan (untuk bidang sains,
+teknik, dan kesehatan), atau merupakan bagian akhir dari tinjauan pustaka
+(untuk bidang sosial, ekonomi, dan humaniora). (Opsional; hapus subbab ini jika
+tidak dipakai.)
 
 
 = TINJAUAN PUSTAKA
 
+Bab ini opsional menurut PPTA. Hapus bab ini beserta seluruh isinya jika
+penelitian tidak memakai tinjauan pustaka tersendiri.
+
 Pustaka yang digunakan dalam bab ini ialah acuan primer, diutamakan artikel
 jurnal dan paten yang relevan dengan bidang yang diteliti, terkini, dan asli
-(_state of the art_). Diktat dan buku ajar tidak termasuk acuan primer. Tinjauan
-pustaka memuat telaah singkat, jelas, dan sistematis tentang kerangka teoretis,
-kerangka pikir, temuan, postulat-postulat, prinsip, asumsi, dan hasil-hasil
-penelitian yang relevan yang melandasi masalah penelitian atau gagasan guna
-menggali pemahaman mengenai masalah penelitian dan pemecahan masalahnya. Oleh
-karena itu, dari tinjauan pustaka harus dapat diturunkan kerangka pikir, hipotesis
-penelitian, dan metode penelitian.
+(_state of the art_). Pustaka acuan harus kredibel dan mutakhir (setidaknya 80%
+dalam 1–10 tahun terakhir). Diktat dan buku ajar tidak termasuk acuan primer.
+Tinjauan pustaka memuat telaah singkat, jelas, dan sistematis tentang kerangka
+teoretis, kerangka pikir, temuan, postulat-postulat, prinsip, asumsi, dan
+hasil-hasil penelitian yang relevan yang melandasi masalah penelitian atau gagasan
+guna menggali pemahaman mengenai masalah penelitian dan pemecahan masalahnya.
 
 == Judul Subbab 1
 
