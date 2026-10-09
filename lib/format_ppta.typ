@@ -183,8 +183,7 @@
   set page(
     numbering: "i",
     footer: none,
-    header: none,
-    // header: _header-mirror("i"),
+    header: _header-mirror("i"),
     header-ascent: 2cm,
   )
   counter(page).update(1)
@@ -380,6 +379,7 @@
   //     ),
   //   )
   show figure.where(kind: table): set figure.caption(position: top)
+  show figure.where(kind: "lampiran"): set figure.caption(position: top)
   set table(stroke: none) // garis diatur manual dengan table.hline()
   // Isi tabel 11pt seluruhnya (sel .dotx 11pt); catatan kaki sel
   // menimpa sendiri ke 10pt via #set text(size: 10pt).
@@ -403,7 +403,7 @@
         set align(left)
         grid(
           columns: (auto, 1fr),
-          column-gutter: 2pt,
+          column-gutter: 0.5em,
           align: top,
           prefix, it.body,
         )
@@ -501,8 +501,8 @@
 
   v(4cm)
 
-  // Program Studi, Fakultas/Sekolah, Institusi, Kota, Tahun
-  // Times New Roman 14pt
+  // Fakultas/Sekolah, Program Studi, Kota, Tahun
+  // Times New Roman 14pt (Suplemen 1: urutan Fakultas, Prodi, Kota, Tahun)
   text(weight: "bold")[
     #(
       upper(fakultas) + "\n" + upper(program-studi) + "\n" + upper(kota) + "\n" + tahun
@@ -576,7 +576,7 @@
     dy: -3cm,
     text(weight: "bold", size: _sz-bab)[
       #(
-        upper(program-studi) + "\n" + upper(fakultas) + "\n" + upper(institusi) + "\n" + upper(kota) + "\n" + tahun
+        upper(fakultas) + "\n" + upper(program-studi) + "\n" + upper(institusi) + "\n" + upper(kota) + "\n" + tahun
       )
     ],
   )
@@ -604,7 +604,7 @@
   judul: "",
   tanggal: "",
   tahun: "",
-  gelar: "sarjana/sarjana terapan..............",
+  gelar: "Sarjana",
   ai-pakai: false,
   ai-alat: "",
   ai-alasan: "",
@@ -625,7 +625,7 @@
   [
     Dengan ini saya menyatakan bahwa skripsi dengan judul
     "#judul" merupakan salah satu syarat untuk memperoleh gelar
-    #gelar Karya ini adalah karya saya dengan arahan dari
+    #gelar. Karya ini adalah karya saya dengan arahan dari
     dosen pembimbing dan belum diajukan dalam bentuk apa pun kepada perguruan
     tinggi mana pun. Sumber informasi yang berasal atau dikutip dari karya yang
     diterbitkan maupun tidak diterbitkan dari penulis lain telah disebutkan dalam
@@ -1161,7 +1161,7 @@
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading, justify: true)
   set text(font: _font, size: _sz-body)
 
-  heading(level: 1, numbering: none, outlined: false)[PRAKATA]
+  heading(level: 1, numbering: none, outlined: true)[PRAKATA]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
 
   v(_leading)
@@ -1201,7 +1201,7 @@
   }
   outline(
     title: none,
-    depth: 2,
+    depth: 3,
   )
 }
 
@@ -1236,6 +1236,7 @@
 /// Membuat halaman Daftar Gambar otomatis.
 /// Tampilkan jika jumlah gambar > 1 (PPTA Tabel 4).
 #let daftar-gambar() = {
+  pagebreak()
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   heading(level: 1, numbering: none, outlined: true)[DAFTAR GAMBAR]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
@@ -1262,6 +1263,7 @@
 
 /// Membuat halaman Daftar Lampiran otomatis (tampilkan jika lampiran > 1).
 #let daftar-lampiran() = {
+  pagebreak()
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   heading(level: 1, numbering: none, outlined: true)[DAFTAR LAMPIRAN]
   counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))

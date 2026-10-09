@@ -25,6 +25,7 @@
 // The date time of your paper is made
 #let date = datetime(year: 2026, month: 6, day: 30)
 #let bulan = bulan-id.at(date.month() - 1)
+#let gelar = "Sarjana"
 
 
 
@@ -44,9 +45,14 @@
   logo: image("assets/logo-ipb.png", width: 2.5cm),
 )
 
-#pagebreak()
-#page()[]
-#pagebreak()
+#halaman-judul(
+  judul: judul_indonesia,
+  nama: nama-penulis,
+  program-studi: program-studi,
+  fakultas: fakultas,
+  tahun: date.year(),
+  gelar: gelar,
+)
 
 #halaman-pernyataan(
   nama-penulis: nama-penulis,
@@ -54,14 +60,11 @@
   judul: judul_indonesia,
   tanggal: [Bogor, #bulan #date.year()],
   tahun: date.year(),
+  gelar: gelar,
   ai-pakai: ai-pakai,
   ai-alat: ai-alat,
   ai-alasan: ai-alasan,
 )
-
-#pagebreak()
-#page()[]
-#pagebreak()
 
 #show: bagian-awal
 #sorotan(
@@ -76,8 +79,6 @@
     5. Tugas akhir ini menunjukkan pentingnya [tekankan signifikansi], dan menyarankan potensi penerapan pada [konteks relevan].
   ],
 )
-
-Sorotan/highlights ditulis dalam satu spasi, disusun 3-5 poin, dan tidak lebih dari satu halaman. Setiap poin ditulis maksimal 100 karakter termasuk spasi dan tanda baca. Tidak diperbolehkan mengacu pustaka, gambar, dan tabel. Singkatan hanya dikenalkan jika masih digunakan lagi dalam bagian lain sorotan/highlights.
 
 #highlights(
   nama: nama-penulis,
@@ -98,8 +99,6 @@ Sorotan/highlights ditulis dalam satu spasi, disusun 3-5 poin, dan tidak lebih d
   judul: "Judul Abstrak Grafis Maksimum Enam Kata,\nTidak Termasuk Kata Depan dan Kata Sambung",
   gambar: image("assets/gambar_abstrak.png", width: 60%),
 )
-
-Abstrak grafis/graphical abstract terdiri atas sebuah gambar yang secara visual merangkum temuan utama dari tugas akhir. Abstrak grafis ini disusun secara singkat dan berdiri sendiri, menyampaikan tujuan dan hasil penelitian, serta disajikan dengan cara yang menarik secara visual dengan resolusi gambar minimal 300 dpi. Abstrak grafis/graphical abstract ditulis dalam satu halaman. Judul diletakkan di bawah abstrak grafis/graphical abstract. Mahasiswa wajib mendeklarasikan penggunaan AI jika digunakan dalam pembuatan abstrak grafis dan perhatikan penggunaan elemen berhak cipta (lihat Suplemen 6).
 
 #graphical-abstract(
   judul: "Graphical Abstract Title Maximum Six Words,\nExcluding Prepositions and Conjunctions",
@@ -154,10 +153,6 @@ Abstrak grafis/graphical abstract terdiri atas sebuah gambar yang secara visual 
   tanggal-lulus: [#bulan #date.year()],
 )
 
-#pagebreak()
-#page()[]
-#pagebreak()
-
 #prakata[
   Puji dan syukur penulis panjatkan kepada Tuhan Yang Maha Esa atas segala
   karunia-Nya sehingga skripsi ini berhasil diselesaikan. Judul dalam penelitian yang
@@ -186,10 +181,6 @@ Abstrak grafis/graphical abstract terdiri atas sebuah gambar yang secara visual 
     Nama penulis
   ]
 ]
-
-#pagebreak()
-#page()[]
-#pagebreak()
 
 #daftar-isi()
 #daftar-tabel()    // hapus baris ini jika tabel ≤ 1
