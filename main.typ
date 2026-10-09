@@ -394,20 +394,36 @@ pada Gambar 5; ... mendekati bentuk sigmoid (Gambar 5); ... meningkat dengan
 pesat (Tabel 3); ...(lihat Lampiran 1).
 
 #figure(
-  caption: [Tingkat kekerasan dan kandungan gula buah pisang ambon pada suhu simpan yang berbeda dan pemberian putresina],
+  caption: [Judul tabel biasanya pendek tanpa diakhiri tanda titik#super[a]],
   kind: table,
-  table(
-    columns: (1fr, auto, auto, auto),
-    align: (left, center, center, center),
-    table.hline(stroke: 0.75pt),
-    [*Perlakuan*], [*0*], [*7*], [*14*],
-    table.hline(stroke: 0.75pt),
-    [15 ºC], [10,20 a], [13,40 a], [11,83 a],
-    [28 ºC], [10,64 a], [14,22 a], [88,43 b],
-    [Dengan putresina], [11,19 a], [13,23 a], [21,19 a],
-    [Tanpa putresina], [10,76 a], [14,40 a], [41,82 b],
-    table.hline(stroke: 0.75pt),
-  ),
+  [
+    #table(
+      columns: (1.1fr, 1fr, 1fr, 1fr, 1fr),
+      align: (left, center, center, center, center),
+      table.hline(stroke: 0.75pt),
+      table.cell(rowspan: 2, align: center)[*Judul kolom pertama*],
+      table.cell(colspan: 2, align: center)[*Judul kolom*#super[b]],
+      table.cell(colspan: 2, align: center)[*Judul kolom*#super[b]],
+      table.hline(stroke: 0.5pt, start: 1),
+      [*Subjudul kolom*], [*Subjudul kolom*],
+      [*Subjudul kolom*], [*Subjudul kolom*],
+      table.hline(stroke: 0.75pt),
+      table.cell(colspan: 5, align: center)[[area informasi]],
+      [Judul baris#super[c]], [], [], [], [],
+      [#h(1em)Subjudul baris], [], [], [], [],
+      [#h(1em)Subjudul baris], [], [], [], [],
+      table.hline(stroke: 0.5pt),
+      [Judul baris], [], [], [], [],
+      [#h(1em)Subjudul baris], [], [], [], [],
+      [#h(1em)Subjudul baris], [], [], [], [],
+      table.cell(colspan: 5, align: center)[[area informasi]],
+      table.hline(stroke: 0.75pt),
+    )
+    #set text(size: 10pt)
+    #super[a] [catatan kaki] Sumber [jika ada]: xxxx xxxx. [judul]
+    #super[b] [catatan kaki] xxxx xxxx. [judul]
+    #super[c] [catatan kaki] xxxx xxxx. [judul]
+  ],
 )
 
 == Pembahasan
