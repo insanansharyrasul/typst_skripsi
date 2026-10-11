@@ -155,7 +155,6 @@
 #let _leading = 0.65em
 
 // ─── Helper bersama (deduplikasi internal, API publik tetap) ───
-// ponytail: tiap helper me-render kontennya sendiri di dalam bloknya —
 // set/show TIDAK boleh bocor lewat panggilan-biasa (scope Typst).
 #let _reset-heading() = counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
 #let _fmt-pembimbing(pembimbing, sep) = {
