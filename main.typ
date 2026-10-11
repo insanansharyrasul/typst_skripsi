@@ -302,32 +302,6 @@ Uraian dengan deskripsi untuk judul subbab 1
     + ...
   ]
 ]
-// #figure(
-//   caption: [Tingkat kekerasan buah pisang raja pada suhu simpan yang berbeda dan pemberian putresina],
-//   kind: table,
-//   table(
-//     columns: (1fr, auto, auto, auto),
-//     align: (left, center, center, center),
-//     table.hline(stroke: 0.75pt),
-//     table.cell(rowspan: 2)[Perlakuan],
-//     table.cell(colspan: 3, align: center)[Kekerasan buah dan kandungan gula pada hari ke-],
-//     table.hline(stroke: 0.5pt, start: 1),
-//     [0], [7], [14],
-//     table.hline(stroke: 0.75pt),
-//     table.cell(colspan: 4, align: center)[Kekerasan buah (mm 50 g#super[-1] detik #super[-1])#super[a]],
-//     [Suhu Simpan], [], [], [],
-//     [#h(1em)15ºC], [9.20a], [13.40a], [11.83a],
-//     [#h(1em)28ºC], [10.64a], [11.22a], [80.43b],
-//     [Putresina], [], [], [],
-//     [#h(1em)Dengan putresina], [12.07a], [13.23a], [11.19a],
-//     [#h(1em)Tanpa putresina], [10.76a], [14.41a], [41.12b],
-//     table.hline(stroke: 0.75pt),
-//     table.cell(colspan: 4)[
-//       #set text(size: 10pt)
-//       #super[a]Angka-angka pada kolom yang sama yang diikuti oleh huruf yang sama tidak berbeda nyata pada taraf uji 5% (uji selang berganda Duncan).
-//     ],
-//   ),
-// )
 
 === Judul Sub-subbab (Kata dalam judul diawali huruf kapital dan dicetak tidak tebal)
 
