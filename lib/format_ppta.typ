@@ -154,6 +154,39 @@
 // dengan "single spacing" pada Typst untuk teks 12pt.
 #let _leading = 0.65em
 
+// ─── Helper bersama (deduplikasi internal, API publik tetap) ───
+// ponytail: tiap helper me-render kontennya sendiri di dalam bloknya —
+// set/show TIDAK boleh bocor lewat panggilan-biasa (scope Typst).
+#let _reset-heading() = counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+#let _fmt-pembimbing(pembimbing, sep) = {
+  let pembimbing = if type(pembimbing) == str { (pembimbing,) } else { pembimbing }
+  if pembimbing.len() == 0 { "" } else if pembimbing.len() == 1 { upper(pembimbing.at(0)) } else {
+    pembimbing.slice(0, -1).map(upper).join(", ") + sep + upper(pembimbing.last())
+  }
+}
+#let _daftar-figures(judul, sel, break-page: false) = {
+  if break-page { pagebreak() }
+  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
+  heading(level: 1, numbering: none, outlined: true)[#judul]
+  _reset-heading()
+  show outline.entry: it => {
+    let fig = it.element
+    layout(size => context {
+      let num = counter(sel).at(fig.location()).first()
+      let prefix = [#num #h(0.5em)]
+      let indent = measure(prefix).width
+      grid(
+        columns: (indent, 1fr, auto),
+        gutter: 0.25em,
+        prefix,
+        [#set par(hanging-indent: 0pt); #link(fig.location())[#fig.caption.body]],
+        align(bottom)[#link(fig.location())[#context counter(page).at(fig.location()).first()]],
+      )
+    })
+  }
+  outline(title: none, target: sel)
+}
+
 
 // ─── Penomoran Halaman ────────────────────────────────────────
 
@@ -177,34 +210,22 @@
   }
 }
 
-/// Aktifkan penomoran halaman Romawi kecil (i, ii, iii, …).
-/// PPTA: penomoran dimulai dari Sorotan sampai Daftar Lampiran.
-/// Gunakan: #show: bagian-awal (SEBELUM #sorotan)
-#let bagian-awal(body) = {
-  set page(
-    numbering: "i",
-    footer: none,
-    header: _header-mirror("i"),
-    header-ascent: 2cm,
-  )
+#let _bagian(fmt, body) = {
+  set page(numbering: fmt, footer: none, header: _header-mirror(fmt), header-ascent: 2cm)
   counter(page).update(1)
   body
 }
+
+/// Aktifkan penomoran halaman Romawi kecil (i, ii, iii, …).
+/// PPTA: penomoran dimulai dari Sorotan sampai Daftar Lampiran.
+/// Gunakan: #show: bagian-awal (SEBELUM #sorotan)
+#let bagian-awal(body) = _bagian("i", body)
 
 /// Aktifkan penomoran halaman Arab (1, 2, 3, …).
 /// Digunakan mulai dari Bab Pendahuluan.
 ///
 /// Gunakan: #show: bagian-isi
-#let bagian-isi(body) = {
-  set page(
-    numbering: "1",
-    footer: none,
-    header: _header-mirror("1"),
-    header-ascent: 2cm,
-  )
-  counter(page).update(1)
-  body
-}
+#let bagian-isi(body) = _bagian("1", body)
 
 
 // ─── Template Utama ──────────────────────────────────────────
@@ -726,19 +747,11 @@
   set text(font: _font, size: _sz-body)
 
   heading(level: 1, numbering: none, outlined: false)[SOROTAN]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
 
   v(0.5em)
 
-  let pembimbing = if type(pembimbing) == str { (pembimbing,) } else { pembimbing }
-
-  let db = if pembimbing.len() == 0 {
-    ""
-  } else if pembimbing.len() == 1 {
-    upper(pembimbing.at(0))
-  } else {
-    pembimbing.slice(0, -1).map(upper).join(", ") + " dan " + upper(pembimbing.last())
-  }
+  let db = _fmt-pembimbing(pembimbing, " dan ")
 
   [*#upper(nama).* #judul. Dibimbing oleh #db.]
 
@@ -771,19 +784,11 @@
   set text(font: _font, size: _sz-body)
 
   heading(level: 1, numbering: none, outlined: false)[_HIGHLIGHTS_]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
 
   v(0.5em)
 
-  let pembimbing = if type(pembimbing) == str { (pembimbing,) } else { pembimbing }
-
-  let sv = if pembimbing.len() == 0 {
-    ""
-  } else if pembimbing.len() == 1 {
-    upper(pembimbing.at(0))
-  } else {
-    pembimbing.slice(0, -1).map(upper).join(", ") + " and " + upper(pembimbing.last())
-  }
+  let sv = _fmt-pembimbing(pembimbing, " and ")
 
   emph([*#upper(nama).* #judul. Supervised by #sv.])
 
@@ -804,29 +809,23 @@
 /// Parameter:
 ///   judul  - Judul abstrak grafis (maks. 6 kata)
 ///   gambar - Konten gambar, mis. image("assets/grafik.png", width: 80%)
+#let _grafis-base(judul-heading, judul-caption, gambar, break-page: true) = {
+  if break-page { pagebreak(weak: true) }
+  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
+  set text(font: _font, size: _sz-body)
+  heading(level: 1, numbering: none, outlined: false)[#judul-heading]
+  _reset-heading()
+  v(0.5em)
+  if gambar != none { align(center, gambar) } else {
+    align(center, box(width: 12cm, height: 8cm, stroke: 0.5pt))
+  }
+  v(_leading)
+  align(center)[#judul-caption]
+}
 #let abstrak-grafis(
   judul: "",
   gambar: none,
-) = {
-  pagebreak(weak: true)
-  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
-  set text(font: _font, size: _sz-body)
-
-  heading(level: 1, numbering: none, outlined: false)[ABSTRAK GRAFIS]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
-
-  v(0.5em)
-
-  if gambar != none {
-    align(center, gambar)
-  } else {
-    align(center, box(width: 12cm, height: 8cm, stroke: 0.5pt))
-  }
-
-  v(_leading)
-
-  align(center)[*#judul*]
-}
+) = _grafis-base([ABSTRAK GRAFIS], [*#judul*], gambar, break-page: true)
 
 /// Membuat halaman Graphical Abstract (ketentuan sama, bahasa Inggris).
 ///
@@ -836,25 +835,7 @@
 #let graphical-abstract(
   judul: "",
   gambar: none,
-) = {
-  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
-  set text(font: _font, size: _sz-body)
-
-  heading(level: 1, numbering: none, outlined: false)[_GRAPHICAL ABSTRACT_]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
-
-  v(0.5em)
-
-  if gambar != none {
-    align(center, gambar)
-  } else {
-    align(center, box(width: 12cm, height: 8cm, stroke: 0.5pt))
-  }
-
-  v(_leading)
-
-  align(center)[_*#judul*_]
-}
+) = _grafis-base([_GRAPHICAL ABSTRACT_], [_*#judul*_], gambar, break-page: false)
 
 
 // ─── Halaman Abstrak (Indonesia) ─────────────────────────────
@@ -890,20 +871,12 @@
   set text(font: _font, size: _sz-body)
 
   heading(level: 1, numbering: none, outlined: false)[ABSTRAK]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
 
   v(0.5em)
 
-  let pembimbing = if type(pembimbing) == str { (pembimbing,) } else { pembimbing }
-
   // Format nama pembimbing: dipisah "dan" jika lebih dari satu
-  let db = if pembimbing.len() == 0 {
-    ""
-  } else if pembimbing.len() == 1 {
-    upper(pembimbing.at(0))
-  } else {
-    pembimbing.slice(0, -1).map(upper).join(", ") + " dan " + upper(pembimbing.last())
-  }
+  let db = _fmt-pembimbing(pembimbing, " dan ")
 
   // Header abstrak: NAMA. Judul. Dibimbing oleh PEMBIMBING.
   [#upper(nama). #judul. Dibimbing oleh #db.]
@@ -949,19 +922,11 @@
   set text(font: _font, size: _sz-body)
 
   heading(level: 1, numbering: none, outlined: false)[ABSTRACT]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
 
   v(0.5em)
 
-  let pembimbing = if type(pembimbing) == str { (pembimbing,) } else { pembimbing }
-
-  let sv = if pembimbing.len() == 0 {
-    ""
-  } else if pembimbing.len() == 1 {
-    upper(pembimbing.at(0))
-  } else {
-    pembimbing.slice(0, -1).map(upper).join(", ") + " and " + upper(pembimbing.last())
-  }
+  let sv = _fmt-pembimbing(pembimbing, " and ")
 
   emph([#upper(nama). #judul. Supervised by #sv.])
 
@@ -1171,7 +1136,7 @@
   set text(font: _font, size: _sz-body)
 
   heading(level: 1, numbering: none, outlined: true)[PRAKATA]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
 
   v(_leading)
   set par(first-line-indent: 1cm, leading: _leading, spacing: _leading, justify: true)
@@ -1216,86 +1181,14 @@
 
 /// Membuat halaman Daftar Tabel otomatis.
 /// Tampilkan jika jumlah tabel > 1 (PPTA Tabel 4).
-#let daftar-tabel() = {
-  pagebreak()
-  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
-  heading(level: 1, numbering: none, outlined: true)[DAFTAR TABEL]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
-  show outline.entry: it => {
-    let fig = it.element
-    layout(size => context {
-      let num = counter(figure.where(kind: table)).at(fig.location()).first()
-      let prefix = [#num #h(0.5em)]
-      let indent = measure(prefix).width
-      grid(
-        columns: (indent, 1fr, auto),
-        gutter: 0.25em,
-        prefix,
-        [#set par(hanging-indent: 0pt); #link(fig.location())[#fig.caption.body]],
-        align(bottom)[#link(fig.location())[#context counter(page).at(fig.location()).first()]],
-      )
-    })
-  }
-  outline(
-    title: none,
-    target: figure.where(kind: table),
-  )
-}
+#let daftar-tabel() = _daftar-figures([DAFTAR TABEL], figure.where(kind: table), break-page: true)
 
 /// Membuat halaman Daftar Gambar otomatis.
 /// Tampilkan jika jumlah gambar > 1 (PPTA Tabel 4).
-#let daftar-gambar() = {
-  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
-  heading(level: 1, numbering: none, outlined: true)[DAFTAR GAMBAR]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
-  show outline.entry: it => {
-    let fig = it.element
-    layout(size => context {
-      let num = counter(figure.where(kind: image)).at(fig.location()).first()
-      let prefix = [#num #h(0.5em)]
-      let indent = measure(prefix).width
-      grid(
-        columns: (indent, 1fr, auto),
-        gutter: 0.25em,
-        prefix,
-        [#set par(hanging-indent: 0pt); #link(fig.location())[#fig.caption.body]],
-        align(bottom)[#link(fig.location())[#context counter(page).at(fig.location()).first()]],
-      )
-    })
-  }
-  outline(
-    title: none,
-    target: figure.where(kind: image),
-  )
-}
+#let daftar-gambar() = _daftar-figures([DAFTAR GAMBAR], figure.where(kind: image))
 
 /// Membuat halaman Daftar Lampiran otomatis (tampilkan jika lampiran > 1).
-#let daftar-lampiran() = {
-  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
-  heading(level: 1, numbering: none, outlined: true)[DAFTAR LAMPIRAN]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
-  // Tampilkan hanya nomor urut (tanpa kata "Lampiran")
-  show outline.entry: it => {
-    let fig = it.element
-    layout(size => context {
-      let num = counter(figure.where(kind: "lampiran")).at(fig.location()).first()
-      let prefix = [#num #h(0.5em)]
-      let indent = measure(prefix).width
-      grid(
-        columns: (indent, 1fr, auto),
-        gutter: 0.25em,
-        prefix,
-        [#set par(hanging-indent: 0pt); #link(fig.location())[#fig.caption.body]],
-        align(bottom)[#link(fig.location())[#context counter(page).at(fig.location()).first()]],
-      )
-    })
-  }
-  // Lampiran dibuat sebagai figure dengan kind: "lampiran"
-  outline(
-    title: none,
-    target: figure.where(kind: "lampiran"),
-  )
-}
+#let daftar-lampiran() = _daftar-figures([DAFTAR LAMPIRAN], figure.where(kind: "lampiran"))
 
 
 // ─── Daftar Pustaka ───────────────────────────────────────────
@@ -1320,7 +1213,7 @@
   // Heading level 1 tanpa nomor bab, tetap masuk outline (Daftar Isi)
   heading(level: 1, numbering: none, outlined: true)[DAFTAR PUSTAKA]
   // Reset counter agar bab berikutnya tidak terganggu
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
   set par(
     first-line-indent: 0pt,
     hanging-indent: 1cm, // setiap entri: baris kedua dst. menjorok 1 cm
@@ -1347,7 +1240,7 @@
 #let lampiran(isi) = {
   pagebreak(weak: true)
   heading(level: 1, numbering: none, outlined: true)[LAMPIRAN]
-  counter(heading).update((ch, ..rest) => (calc.max(0, ch - 1),))
+  _reset-heading()
   set par(leading: _leading, spacing: _leading, justify: true)
   isi
 }

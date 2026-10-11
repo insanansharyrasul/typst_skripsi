@@ -88,10 +88,8 @@
     1. This study addresses [insert key topic], aiming to [state objective clearly and concisely].
     2. The research employs [mention methodology] to analyze/investigate [mention subject of study].
     3. Results indicate that [summarize key findings with precision].
-    4. The findings contribute to [mention the field/implications], offering new insights
-    into [specific aspect].
-    5. This final assignment demonstrates the importance of [highlight significance],
-    suggesting potential applications in [relevant context].
+    4. The findings contribute to [mention the field/implications], offering new insights into [specific aspect].
+    5. This final assignment demonstrates the importance of [highlight significance], suggesting potential applications in [relevant context].
   ],
 )
 
