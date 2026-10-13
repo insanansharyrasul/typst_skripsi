@@ -821,7 +821,7 @@
 
   let db = _fmt-pembimbing(pembimbing, " dan ")
 
-  [*#upper(nama).* #judul. Dibimbing oleh #db.]
+  [#upper(nama). #judul. Dibimbing oleh #db.]
 
   v(_leading)
 
@@ -858,7 +858,7 @@
 
   let sv = _fmt-pembimbing(pembimbing, " and ")
 
-  emph([*#upper(nama).* #judul. Supervised by #sv.])
+  emph([#upper(nama). #judul. Supervised by #sv.])
 
   v(_leading)
 
