@@ -163,6 +163,74 @@
     pembimbing.slice(0, -1).map(upper).join(", ") + sep + upper(pembimbing.last())
   }
 }
+#let _judul-segitiga(judul, size: _sz-bab) = {
+  // Non-string (konten manual) → hormati apa adanya.
+  if type(judul) != str {
+    return text(font: _font, size: size, weight: "bold")[#upper(judul)]
+  }
+  let s = upper(judul.trim())
+  // Override manual: penulis sudah sisipkan "\n" → hormati pembagian barisnya.
+  if s.contains("\n") {
+    let bars = s.split("\n").map(b => b.trim()).filter(b => b.len() > 0)
+    return text(font: _font, size: size, weight: "bold", bars.map(b => [#b]).join(linebreak()))
+  }
+  layout(_cs => context {
+    let avail = _cs.width
+    let words = s.split(" ").map(w => w.trim()).filter(w => w.len() > 0)
+    let n = words.len()
+    if n == 0 { return }
+    let sty(t) = text(font: _font, size: size, weight: "bold", t)
+    let tol = 3pt
+    let best = none
+    let bw1 = 0pt
+    let bw2 = 0pt
+    // 1 baris (diprioritaskan bila muat).
+    let l1 = words.join(" ")
+    let w1 = measure(sty(l1)).width
+    if w1 <= avail {
+      best = (l1,)
+      bw1 = w1
+    }
+    // 2 baris: baris-1 terpanjang (segitiga terbalik).
+    for i in range(1, n) {
+      let a = words.slice(0, i).join(" ")
+      let b = words.slice(i).join(" ")
+      let wa = measure(sty(a)).width
+      let wb = measure(sty(b)).width
+      if wa <= avail and wb <= avail and wa + tol >= wb {
+        if best == none or wa > bw1 or (wa == bw1 and wb > bw2) {
+          best = (a, b)
+          bw1 = wa
+          bw2 = wb
+        }
+      }
+    }
+    // 3 baris: menurun L1 ≥ L2 ≥ L3.
+    if n >= 3 {
+      for i in range(1, n - 1) {
+        for j in range(i + 1, n) {
+          let a = words.slice(0, i).join(" ")
+          let b = words.slice(i, j).join(" ")
+          let c = words.slice(j).join(" ")
+          let wa = measure(sty(a)).width
+          let wb = measure(sty(b)).width
+          let wc = measure(sty(c)).width
+          if wa <= avail and wb <= avail and wc <= avail and wa + tol >= wb and wb + tol >= wc {
+            if best == none or wa > bw1 or (wa == bw1 and wb > bw2) {
+              best = (a, b, c)
+              bw1 = wa
+              bw2 = wb
+            }
+          }
+        }
+      }
+    }
+    if best == none {
+      assert(false, message: "Judul tidak muat 3 baris segitiga terbalik — pendekkan judul (maks 15 kata) atau pecah manual dengan \"\\n\".")
+    }
+    text(font: _font, size: size, weight: "bold", best.map(b => [#b]).join(linebreak()))
+  })
+}
 #let _daftar-figures(judul, sel, break-page: false) = {
   if break-page { pagebreak() }
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
@@ -513,8 +581,9 @@
 
   v(2cm)
 
-  // Judul: Times New Roman 14pt, kapital semua, spasi 1, center
-  text(size: judul-size, weight: "bold")[#upper(judul)]
+  // Judul: Times New Roman 14pt, kapital semua, spasi 1, center,
+  // otomatis segitiga terbalik maks 3 baris.
+  _judul-segitiga(judul, size: judul-size)
 
   v(1.5cm)
 
@@ -581,7 +650,7 @@
   // ── Judul dan Nama ─────────────────────────────────
   align(center)[
     #v(5cm)
-    #text(weight: "bold")[#upper(judul)]
+    #_judul-segitiga(judul)
     #v(3cm)
     #text(weight: "bold")[SKRIPSI]
     #v(2.5cm)
