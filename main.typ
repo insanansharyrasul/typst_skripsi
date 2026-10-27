@@ -32,6 +32,7 @@
   author: nama-penulis,
   keywords: (program-studi, fakultas, "IPB", "skripsi"),
   date: date,
+  description: [Skripsi sarjana, #program-studi, #fakultas, IPB]
 )
 
 
