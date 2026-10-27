@@ -27,6 +27,13 @@
 #let bulan = bulan-id.at(date.month() - 1)
 #let gelar = "Sarjana"
 
+#set document(
+  title: judul_indonesia,
+  author: nama-penulis,
+  keywords: (program-studi, fakultas, "IPB", "skripsi"),
+  date: date,
+)
+
 
 
 
