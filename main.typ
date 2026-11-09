@@ -53,15 +53,6 @@
   logo: image("assets/logo-ipb.png", width: 2.5cm),
 )
 
-#halaman-judul(
-  judul: judul_indonesia,
-  nama: nama-penulis,
-  program-studi: program-studi,
-  fakultas: fakultas,
-  tahun: date.year(),
-  gelar: gelar,
-)
-
 #halaman-pernyataan(
   nama-penulis: nama-penulis,
   nim: nim,
@@ -298,16 +289,12 @@ dan kesehatan mental @pezzino2026working.
 == Judul Subbab (Kata dalam judul diawali huruf kapital dan dicetak tebal)
 
 Uraian dengan deskripsi untuk judul subbab 1
-#bertingkat[
++ ...
++ ...
++ ...
   + ...
   + ...
   + ...
-  #bertingkat[
-    + ...
-    + ...
-    + ...
-  ]
-]
 
 === Judul Sub-subbab (Kata dalam judul diawali huruf kapital dan dicetak tidak tebal)
 

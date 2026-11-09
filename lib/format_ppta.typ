@@ -31,14 +31,6 @@
 //     logo:          image("assets/logo-ipb.png", width: 2.5cm),
 //   )
 //
-//   #halaman-judul(
-//     judul:         "Judul Skripsi",
-//     nama:          "Nama Lengkap",
-//     program-studi: "Program Studi",
-//     fakultas:      "Fakultas",
-//     tahun:         "2026",
-//   )
-//
 //   #halaman-pernyataan(
 //     nama-penulis: "Nama Lengkap",
 //     nim:          "NXXXXXXXXX",
@@ -150,9 +142,26 @@
 #let _font-mono = "Courier New"
 #let _sz-mono = 11pt
 
-// Jarak antarbaris (1 spasi). Nilai 0.65em adalah setara
-// dengan "single spacing" pada Typst untuk teks 12pt.
-#let _leading = 0.65em
+// Jarak antarbaris (1 spasi). Word "single" untuk Times New Roman = 1,15 em
+// per baris (13,8 pt pada 12 pt). Typst mengukur leading dari garis dasar ke
+// puncak huruf kapital, jadi ±0,46 em (terukur cocok dengan PDF dotx: 0,49 cm).
+#let _leading = 0.46em
+// Satu baris kosong (setara menekan Enter sekali di Word).
+#let _baris = 1.15em
+// Jarak di bawah judul level 1 (dotx: after 480 / 240 twip).
+#let _h1-bawah = 24pt
+#let _h1-bawah-awal = 12pt
+
+// Penanda halaman tanpa nomor (penguji, pengesahan, halaman kosong).
+#let _tanpa-nomor = metadata("ppta-tanpa-nomor")
+
+// Mulai di halaman gasal (cetak bolak-balik, dotx). Halaman kosong
+// penyisipnya diberi penanda agar nomor halamannya tidak dicetak.
+#let _ke-gasal() = {
+  [#metadata(none)<_ppta-akhir>]
+  pagebreak(to: "odd", weak: true)
+  [#metadata(none)<_ppta-awal>]
+}
 
 // ─── Helper bersama (deduplikasi internal, API publik tetap) ───
 // set/show TIDAK boleh bocor lewat panggilan-biasa (scope Typst).
@@ -232,24 +241,21 @@
   })
 }
 #let _daftar-figures(judul, sel, break-page: false) = {
-  if break-page { pagebreak() }
+  if break-page { pagebreak(weak: true) } else { v(2 * _baris) }
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   heading(level: 1, numbering: none, outlined: true)[#judul]
   _reset-heading()
+  // Nomor di tepi kiri, judul menggantung 0,63 cm, jarak 1 cm ke nomor
+  // halaman (dotx "Daftar Ilustrasi": left 357/hanging 357/right 567).
   show outline.entry: it => {
-    let fig = it.element
-    layout(size => context {
-      let num = counter(sel).at(fig.location()).first()
-      let prefix = [#num #h(0.5em)]
-      let indent = measure(prefix).width
-      grid(
-        columns: (indent, 1fr, auto),
-        gutter: 0.25em,
-        prefix,
-        [#set par(hanging-indent: 0pt); #link(fig.location())[#fig.caption.body]],
-        align(bottom)[#link(fig.location())[#context counter(page).at(fig.location()).first()]],
-      )
-    })
+    let loc = it.element.location()
+    grid(
+      columns: (0.63cm, 1fr, auto),
+      column-gutter: (0pt, 1cm),
+      link(loc, [#counter(sel).at(loc).first()]),
+      link(loc, it.element.caption.body),
+      align(right + bottom, link(loc, it.page())),
+    )
   }
   outline(title: none, target: sel)
 }
@@ -264,12 +270,23 @@
 // align kanan/kiri langsung memenuhi batas tanpa geseran manual.
 #let _header-mirror(fmt) = context {
   let cur = here().page()
-  let chap-here = query(heading.where(level: 1)).any(h => h.numbering != none and h.location().page() == cur)
-  if chap-here { none } else {
+  // Halaman yang memuat judul level 1 (bab maupun Sorotan, Prakata, dst.)
+  // serta halaman penguji/pengesahan tidak dicetak nomornya (dotx: titlePg).
+  // Halaman kosong sisipan _ke-gasal(): di antara penanda akhir & awal.
+  let kosong = query(<_ppta-akhir>).zip(query(<_ppta-awal>)).any(((a, b)) => (
+    a.location().page() < cur and cur < b.location().page()
+  ))
+  let sembunyi = (
+    kosong
+      or query(heading.where(level: 1)).any(h => h.location().page() == cur)
+      or query(metadata).any(m => m.value == "ppta-tanpa-nomor" and m.location().page() == cur)
+  )
+  if sembunyi { none } else {
     let n = counter(page).get().first()
     let s = numbering(fmt, n)
     set text(font: _font, size: _sz-body)
-    if calc.odd(n) {
+    // Sisi ditentukan halaman fisik agar selalu di tepi luar (pias mirror).
+    if calc.odd(cur) {
       align(right, s)
     } else {
       align(left, s)
@@ -278,7 +295,10 @@
 }
 
 #let _bagian(fmt, body) = {
-  set page(numbering: fmt, footer: none, header: _header-mirror(fmt), header-ascent: 2cm)
+  _ke-gasal()
+  // header-ascent: jarak garis dasar nomor ke pias atas 3 cm → puncak angka
+  // ±2 cm dari tepi atas kertas (Suplemen 1 A butir 3, dotx).
+  set page(numbering: fmt, footer: none, header: _header-mirror(fmt), header-ascent: 0.6cm)
   counter(page).update(1)
   body
 }
@@ -354,17 +374,23 @@
   set par(
     leading: _leading,
     spacing: _leading,
-    first-line-indent: 1cm,
+    first-line-indent: (amount: 1cm, all: true), // all: paragraf pertama setelah judul juga menjorok (dotx)
     justify: true,
   )
 
-  // ── Paragraf Bertingkat & Rincian (butir 7–8) ──────────────
-  // Rincian dalam subbab/sub-subbab memakai huruf a, b, c (butir 8)
-  // dan tiap tingkat menjorok 0,5 cm dari paragraf di atasnya (butir 7).
-  // Default enum/list di sini a, b, c + indent 0,5 cm; tingkat
-  // berikutnya dibungkus #bertingkat[...] agar tambah 0,5 cm lagi.
-  set enum(numbering: "a.", indent: 0.5cm)
-  set list(indent: 0.5cm)
+  // ── Rincian (butir 8, mengikuti dotx) ──────────────────────
+  // Rincian dalam subbab: a, b, c di tepi kiri; tingkat kedua 1), 2), 3)
+  // menjorok 0,75 cm. Di dalam sub-subbab dotx memakai a) dan (1); pakai
+  //   #set enum(numbering: "a)(1)")
+  // secara lokal bila perlu.
+  set enum(numbering: "a", indent: 0pt)
+  show enum: it => {
+    // Tingkat kedua: 1), 2), … ; nomornya ±0,75 cm dari tepi kiri
+    // (indent dihitung dari awal teks butir induk).
+    set enum(numbering: "1)", indent: 0.35cm)
+    it
+  }
+  set list(indent: 0pt)
 
   // ── Penomoran Heading ─────────────────────────────────────
   // Level 1 (Bab)        → angka Romawi kapital, contoh: II
@@ -385,14 +411,15 @@
   // ── Tampilan Judul Bab (Level 1) ──────────────────────────
   // • Times New Roman 14pt, tebal (bold), huruf kapital semua
   // • Posisi: di tengah (centered), tanpa titik, tanpa garis bawah
-  // • Setiap bab baru dimulai di halaman baru
+  // • Bab baru selalu di halaman gasal (cetak bolak-balik, dotx)
+  // • Tepat di pias atas; jarak ke teks di bawahnya 24 pt (dotx "Judul Bab"),
+  //   12 pt untuk judul tanpa nomor yang tidak masuk Daftar Isi
+  //   (Sorotan, Abstrak, Prakata; dotx after 240).
   // (Suplemen 1 A butir 9 dan 12)
+  show heading.where(level: 1): set block(above: 0pt, below: 0pt)
   show heading.where(level: 1): it => {
-    // Bab bernomor selalu mulai halaman baru; heading tanpa nomor (Daftar Tabel,
-    // Daftar Gambar, Daftar Lampiran) mengalir ke halaman yang sama.
-    if it.numbering != none { pagebreak(weak: true) }
-    set par(first-line-indent: 0pt, spacing: 0pt, leading: _leading)
-    v(if it.numbering != none { 6pt } else { 2 * _leading })
+    if it.numbering != none { _ke-gasal() }
+    set par(first-line-indent: 0pt, spacing: 0pt, leading: _leading, hanging-indent: 0pt)
     align(
       center,
       text(font: _font, size: _sz-bab, weight: "bold")[
@@ -403,55 +430,43 @@
         #upper(it.body)
       ],
     )
-    v(0.5cm)
+    v(if it.numbering != none or it.outlined { _h1-bawah } else { _h1-bawah-awal })
   }
 
   // ── Tampilan Judul Subbab (Level 2) ───────────────────────
   // • Times New Roman 12pt, tebal (bold), kapital tiap kata
   //   (kecuali kata hubung dan kata depan)
-  // • Posisi: kiri (left-aligned); judul > 1 baris menggantung 0,7 cm
-  //   (dotx JudulSubbab left 397/hanging 397; baris pertama tetap di tepi kiri)
-  // • 2 spasi dari konten di atas, 1 spasi dari konten di bawah
+  // • Nomor di tepi kiri, teks judul mulai 0,7 cm; baris berikutnya
+  //   menggantung 0,7 cm (dotx JudulSubbab left 397/hanging 397)
+  // • 6 pt di atas, 0 di bawah (dotx JudulSubbab before 120/after 0)
   // (Suplemen 1 A butir 10)
-  show heading.where(level: 2): it => {
-    set par(first-line-indent: 0pt, hanging-indent: 0.7cm, spacing: 0pt, leading: _leading)
-    v(2 * _leading)
-    text(font: _font, size: _sz-body, weight: "bold")[
+  show heading.where(level: 2): it => block(above: _leading + 6pt, below: _leading, sticky: true, {
+    set par(first-line-indent: 0pt, hanging-indent: 0.7cm, leading: _leading, justify: false)
+    par(text(font: _font, size: _sz-body, weight: "bold")[
       #if it.numbering != none {
-        context counter(heading).display("1.1")
-        h(0.75em)
-      }
-      #it.body
-    ]
-    v(_leading)
-  }
+        box(width: 0.7cm, context counter(heading).display("1.1"))
+      }#it.body
+    ])
+  })
 
   // ── Tampilan Judul Sub-subbab (Level 3) ───────────────────
   // • Times New Roman 12pt, TIDAK tebal (regular), kapital tiap kata
   //   (kecuali kata hubung dan kata depan)
-  // • Posisi: kiri (left-aligned)
-  // • 1,5 spasi dari konten di atas, 1 spasi dari konten di bawah
-  // • Judul > 1 baris: jarak 1 spasi
-  // (Suplemen 1 A butir 11)
-  show heading.where(level: 3): it => {
+  // • Bernomor 2.1.1 di tepi kiri (Suplemen 1 A butir 11)
+  // • 6 pt di atas, 0 di bawah (dotx JudulSub-subbab, turunan JudulSubbab)
+  show heading.where(level: 3): it => block(above: _leading + 6pt, below: _leading, sticky: true, {
     set par(
       first-line-indent: 0pt,
-      hanging-indent: 1.2cm, // Menjaga teks baris kedua judul sejajar di bawah teks judul (bukan di bawah angka 2.1.1)
-      spacing: 0pt,
+      hanging-indent: 1.2cm, // baris kedua sejajar teks judul, bukan angka 2.1.1
       leading: _leading,
+      justify: false,
     )
-    v(1.5 * _leading)
-
-    // Judul diketik di tepi kiri (Suplemen 1 A butir 11), tanpa indentasi.
-    text(font: _font, size: _sz-body, weight: "regular")[
+    par(text(font: _font, size: _sz-body, weight: "regular")[
       #if it.numbering != none {
-        context counter(heading).display("1.1.1")
-        h(0.75em)
-      }
-      #it.body
-    ]
-    v(_leading)
-  }
+        box(width: 1.2cm, context counter(heading).display("1.1.1"))
+      }#it.body
+    ])
+  })
 
   // ── Tabel ────────────────────────────────────────────────
   // • Caption/judul tabel di ATAS tabel
@@ -707,87 +722,87 @@
   ai-alat: "",
   ai-alasan: "",
 ) = {
-  pagebreak(weak: true)
-  set par(first-line-indent: 1cm, justify: true, leading: _leading, spacing: _leading)
+  _ke-gasal()
+  set par(first-line-indent: (amount: 1cm, all: true), justify: true, leading: _leading, spacing: _leading)
   set text(font: _font, size: _sz-body)
 
+  // Judul 14 pt tebal, lalu satu baris kosong (dotx).
   {
     set par(first-line-indent: 0pt)
-    align(center)[
-      *#upper("PERNYATAAN MENGENAI SKRIPSI," + linebreak() + "SUMBER INFORMASI, PENGGUNAAN AI, DAN" + linebreak() + "PELIMPAHAN HAK CIPTA")*
-    ]
+    align(center, text(size: _sz-bab, weight: "bold")[
+      PERNYATAAN MENGENAI SKRIPSI, \
+      SUMBER INFORMASI, PENGGUNAAN AI, DAN \
+      PELIMPAHAN HAK CIPTA
+    ])
   }
+  v(_baris)
 
-  v(1em)
-
-  [
-    Dengan ini saya menyatakan bahwa skripsi dengan judul
+  // Paragraf berurutan tanpa jarak tambahan (dotx: after 0).
+  [Dengan ini saya menyatakan bahwa skripsi dengan judul
     "#judul" merupakan salah satu syarat untuk memperoleh gelar
     #gelar. Karya ini adalah karya saya dengan arahan dari
     dosen pembimbing dan belum diajukan dalam bentuk apa pun kepada perguruan
     tinggi mana pun. Sumber informasi yang berasal atau dikutip dari karya yang
     diterbitkan maupun tidak diterbitkan dari penulis lain telah disebutkan dalam
-    teks dan dicantumkan dalam Daftar Pustaka di bagian akhir skripsi ini.
-  ]
-
-  v(_leading)
-
+    teks dan dicantumkan dalam Daftar Pustaka di bagian akhir skripsi ini.]
+  parbreak()
   if ai-pakai {
-    [
-      Dalam penyusunan karya ini, saya menggunakan bantuan kecerdasan buatan
+    [Dalam penyusunan karya ini, saya menggunakan bantuan kecerdasan buatan
       #ai-alat untuk #ai-alasan. Setelah menggunakan alat/layanan tersebut,
       saya meninjau dan menyunting konten sesuai kebutuhan serta bertanggung
-      jawab penuh atas isi karya tugas akhir ini.
-    ]
+      jawab penuh atas isi karya tugas akhir ini.]
   } else {
-    [
-      Dalam penyusunan karya ini, saya tidak menggunakan bantuan kecerdasan
-      buatan.
-    ]
+    [Dalam penyusunan karya ini, saya tidak menggunakan bantuan kecerdasan
+      buatan.]
   }
+  parbreak()
+  [Dengan ini saya melimpahkan hak cipta dari karya tulis saya kepada
+    Institut Pertanian Bogor.]
+  parbreak()
 
-  v(_leading)
-
-  [
-    Dengan ini saya melimpahkan hak cipta dari karya tulis saya kepada
-    Institut Pertanian Bogor.
-  ]
-
-  v(2em)
-
+  // Tanggal, satu baris kosong, nama, NIM (dotx).
+  v(_baris)
   align(right)[
-    #tanggal
-    #v(3em)
+    #tanggal \
+    #v(_baris)
     #nama-penulis \
     #nim
   ]
 
   v(1fr)
 
-  align(center)[
-    © Hak Cipta milik IPB, tahun #tahun \
-    Hak Cipta dilindungi Undang-Undang
-  ]
-
-  v(_leading)
-
-  [
-    Dilarang mengutip sebagian atau seluruh karya tulis ini tanpa mencantumkan atau
-    menyebutkan sumbernya. Pengutipan hanya untuk kepentingan pendidikan, penelitian,
-    penulisan karya ilmiah, penyusunan laporan, penulisan kritik, atau tinjauan suatu
-    masalah, dan pengutipan tersebut tidak merugikan kepentingan IPB.
-  ]
-
-  v(_leading)
-
-  [
-    Dilarang mengumumkan dan memperbanyak sebagian atau seluruh karya tulis ini
-    dalam bentuk apa pun tanpa izin IPB.
-  ]
+  // Blok hak cipta: dua baris 14 pt, lalu paragraf ber-jarak 10 pt (dotx).
+  {
+    set par(spacing: 10pt)
+    align(center, text(size: _sz-bab)[
+      © Hak Cipta milik IPB, #tahun \
+      Hak Cipta dilindungi Undang-Undang
+    ])
+    [Dilarang mengutip sebagian atau seluruh karya tulis ini tanpa mencantumkan atau
+      menyebutkan sumbernya. Pengutipan hanya untuk kepentingan pendidikan, penelitian,
+      penulisan karya ilmiah, penyusunan laporan, penulisan kritik, atau tinjauan suatu
+      masalah, dan pengutipan tersebut tidak merugikan kepentingan IPB.]
+    parbreak()
+    [Dilarang mengumumkan dan memperbanyak sebagian atau seluruh karya tulis ini
+      dalam bentuk apa pun tanpa izin IPB.]
+  }
 }
 
 
 // ─── Sorotan / Highlights ─────────────────────────────────────
+
+// Kepala tanpa inden, satu baris kosong, lalu poin 1., 2., … di tepi kiri
+// dengan baris berikutnya menggantung 0,5 cm (dotx).
+#let _poin-sorotan(judul, kepala, isi) = {
+  set par(leading: _leading, spacing: _leading, first-line-indent: 0pt, justify: true)
+  set text(font: _font, size: _sz-body)
+  heading(level: 1, numbering: none, outlined: false, judul)
+  _reset-heading()
+  kepala
+  v(_baris)
+  set enum(numbering: "1.", indent: 0pt, body-indent: 5pt)
+  isi
+}
 
 /// Membuat halaman Sorotan (bahasa Indonesia).
 /// Temuan/kontribusi utama, 3–5 poin, tiap poin maks. 100 karakter
@@ -805,27 +820,12 @@
   pembimbing: (),
   isi: [],
 ) = {
-  pagebreak(weak: true)
-  set par(
-    leading: _leading,
-    spacing: _leading,
-    first-line-indent: 1cm,
-    justify: true,
+  _ke-gasal()
+  _poin-sorotan(
+    [SOROTAN],
+    [#upper(nama). #judul. Dibimbing oleh #_fmt-pembimbing(pembimbing, " dan ").],
+    isi,
   )
-  set text(font: _font, size: _sz-body)
-
-  heading(level: 1, numbering: none, outlined: false)[SOROTAN]
-  _reset-heading()
-
-  v(0.5em)
-
-  let db = _fmt-pembimbing(pembimbing, " dan ")
-
-  [#upper(nama). #judul. Dibimbing oleh #db.]
-
-  v(_leading)
-
-  isi
 }
 
 /// Membuat halaman Highlights (bahasa Inggris, ditulis miring).
@@ -842,27 +842,14 @@
   pembimbing: (),
   isi: [],
 ) = {
-  // pagebreak(weak: true)
-  set par(
-    leading: _leading,
-    spacing: _leading,
-    first-line-indent: 1cm,
-    justify: true,
+  // Satu halaman dengan Sorotan, dipisah dua baris kosong (dotx).
+  v(2 * _baris)
+  set text(style: "italic")
+  _poin-sorotan(
+    [HIGHLIGHTS],
+    [#upper(nama). #judul. Supervised by #_fmt-pembimbing(pembimbing, " and ").],
+    isi,
   )
-  set text(font: _font, size: _sz-body)
-
-  heading(level: 1, numbering: none, outlined: false)[_HIGHLIGHTS_]
-  _reset-heading()
-
-  v(0.5em)
-
-  let sv = _fmt-pembimbing(pembimbing, " and ")
-
-  emph([#upper(nama). #judul. Supervised by #sv.])
-
-  v(_leading)
-
-  emph(isi)
 }
 
 
@@ -878,12 +865,11 @@
 ///   judul  - Judul abstrak grafis (maks. 6 kata)
 ///   gambar - Konten gambar, mis. image("assets/grafik.png", width: 80%)
 #let _grafis-base(judul-heading, judul-caption, gambar, break-page: true) = {
-  if break-page { pagebreak(weak: true) }
+  if break-page { pagebreak(weak: true) } else { v(_baris) }
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   set text(font: _font, size: _sz-body)
   heading(level: 1, numbering: none, outlined: false)[#judul-heading]
   _reset-heading()
-  v(0.5em)
   if gambar != none { align(center, gambar) } else {
     align(center, box(width: 12cm, height: 8cm, stroke: 0.5pt))
   }
@@ -908,6 +894,20 @@
 
 // ─── Halaman Abstrak (Indonesia) ─────────────────────────────
 
+// Kepala dan narasi tanpa inden baris pertama; satu baris kosong di
+// antaranya; kata kunci menggantung 2 cm (dotx).
+#let _isi-abstrak(judul, kepala, isi, kunci) = {
+  set par(leading: _leading, spacing: _leading, first-line-indent: 0pt, justify: true)
+  set text(font: _font, size: _sz-body)
+  heading(level: 1, numbering: none, outlined: false, judul)
+  _reset-heading()
+  kepala
+  v(_baris)
+  isi
+  v(_baris)
+  par(hanging-indent: 2cm, kunci)
+}
+
 /// Membuat halaman Abstrak (bahasa Indonesia).
 /// Narasi satu paragraf, ≤ 200 kata, satu halaman. Memuat latar belakang
 /// (tentatif), tujuan, metode, hasil (temuan baru), dan implikasi.
@@ -929,36 +929,12 @@
   kata-kunci: "",
 ) = {
   pagebreak(weak: true)
-  // set page(header: none)
-  set par(
-    leading: _leading,
-    spacing: _leading,
-    first-line-indent: 1cm,
-    justify: true,
+  _isi-abstrak(
+    [ABSTRAK],
+    [#upper(nama). #judul. Dibimbing oleh #_fmt-pembimbing(pembimbing, " dan ").],
+    isi,
+    [Kata kunci: #kata-kunci],
   )
-  set text(font: _font, size: _sz-body)
-
-  heading(level: 1, numbering: none, outlined: false)[ABSTRAK]
-  _reset-heading()
-
-  v(0.5em)
-
-  // Format nama pembimbing: dipisah "dan" jika lebih dari satu
-  let db = _fmt-pembimbing(pembimbing, " dan ")
-
-  // Header abstrak: NAMA. Judul. Dibimbing oleh PEMBIMBING.
-  [#upper(nama). #judul. Dibimbing oleh #db.]
-
-  v(_leading)
-
-  isi
-
-  v(_leading)
-
-  {
-    set par(first-line-indent: 0pt)
-    [Kata kunci: #kata-kunci]
-  }
 }
 
 
@@ -980,34 +956,15 @@
   isi: [],
   keywords: "",
 ) = {
-  // set page(header: none)
-  set par(
-    leading: _leading,
-    spacing: _leading,
-    first-line-indent: 1cm,
-    justify: true,
+  // Satu halaman dengan Abstrak, dipisah satu baris kosong (dotx).
+  v(_baris)
+  set text(style: "italic")
+  _isi-abstrak(
+    [ABSTRACT],
+    [#upper(nama). #judul. Supervised by #_fmt-pembimbing(pembimbing, " and ").],
+    isi,
+    [Keywords: #keywords],
   )
-  set text(font: _font, size: _sz-body)
-
-  heading(level: 1, numbering: none, outlined: false)[ABSTRACT]
-  _reset-heading()
-
-  v(0.5em)
-
-  let sv = _fmt-pembimbing(pembimbing, " and ")
-
-  emph([#upper(nama). #judul. Supervised by #sv.])
-
-  v(_leading)
-
-  emph(isi)
-
-  v(_leading)
-
-  {
-    set par(first-line-indent: 0pt)
-    emph([Keywords: #keywords])
-  }
 }
 
 
@@ -1030,17 +987,18 @@
   pagebreak(to: "even", weak: true)
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
   set text(font: _font, size: _sz-body)
+  _tanpa-nomor
 
   v(1fr)
 
   [#judul]
-
-  v(_leading)
+  parbreak()
 
   let penguji = if type(penguji) == str { (penguji,) } else { penguji }
 
+  // Nomor urut menjorok 1,5 cm (dotx ind left 851).
   for (i, p) in penguji.enumerate() {
-    [#h(2.0em) #(i + 1) #h(0.5em) #p \ ]
+    pad(left: 1.5cm)[#(i + 1) #h(0.5em) #p]
   }
 }
 
@@ -1082,36 +1040,38 @@
   tanggal-ujian: "",
   tanggal-lulus: "",
 ) = {
-  pagebreak(to: "odd", weak: true)
+  _ke-gasal()
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading, justify: false)
   set text(font: _font, size: _sz-body)
+  _tanpa-nomor
 
-  // Blok info: label rata kiri dengan titik dua sejajar, isi menyambung
+  // Blok info: titik dua di 2,5 cm, isi (dan baris lanjutannya) di 2,75 cm
+  // (dotx tab 1418, hanging 1560).
   grid(
-    columns: (auto, 1em, 1fr),
-    row-gutter: 0.4em,
-    [Judul Skripsi], [ : ], [#judul],
-    [Nama], [ : ], [#nama-penulis],
-    [NIM], [ : ], [#nim],
+    columns: (2.5cm, 0.25cm, 1fr),
+    row-gutter: _leading,
+    [Judul Skripsi], [:], [#judul],
+    [Nama], [:], [#nama-penulis],
+    [NIM], [:], [#nim],
   )
 
-  v(1.5em)
+  v(2.5cm)
 
   // Garis tanda tangan, rata kanan-bawah dalam sel
   let _sig = align(right + bottom, line(length: 6cm, stroke: 0.75pt))
 
-  // Blok identitas penanda tangan: label, lalu nama (dan NIP) menjorok 1 em.
+  // Blok identitas penanda tangan: label, lalu nama (dan NIP), tanpa inden.
   // `prefix` opsional ditampilkan miring di atas label.
   let _person(label, name, nip, prefix: none) = {
     set par(first-line-indent: 0pt)
     if prefix != none [#emph(prefix) \ ]
-    [#label \ #h(1em)#name]
-    if nip != "" [ \ #h(1em)NIP #nip]
+    [#label \ #name]
+    if nip != "" [ \ NIP #nip]
   }
 
   // ── Disetujui oleh ──
   align(center)[Disetujui oleh]
-  v(0.3em)
+  v(1cm)
 
   let pembimbing-rows = ()
   for (i, p) in pembimbing.enumerate() {
@@ -1125,15 +1085,16 @@
     columns: (1fr, 7cm),
     align: (left + top, right + bottom),
     stroke: 0pt,
-    inset: (x: 0.6em, y: 0.8em),
+    inset: (x: 0.6em, y: 0pt),
+    row-gutter: 1.45cm, // ruang tanda tangan ±2,4 cm per penanda tangan (dotx)
     ..pembimbing-rows,
   )
 
-  v(1.5em)
+  v(1cm)
 
   // ── Diketahui oleh ──
   align(center)[Diketahui oleh]
-  v(0.3em)
+  v(1cm)
 
   let diketahui-rows = (
     _person([#ketua-label], ketua, ketua-nip),
@@ -1153,7 +1114,8 @@
     columns: (1fr, 7cm),
     align: (left + top, right + bottom),
     stroke: 0pt,
-    inset: (x: 0.6em, y: 0.8em),
+    inset: (x: 0.6em, y: 0pt),
+    row-gutter: 1.45cm,
     ..diketahui-rows,
   )
 
@@ -1199,15 +1161,15 @@
 ///     skripsi ini berhasil diselesaikan. …
 ///   ]
 #let prakata(isi) = {
-  pagebreak(weak: true)
+  _ke-gasal()
   set par(first-line-indent: 0pt, leading: _leading, spacing: _leading, justify: true)
   set text(font: _font, size: _sz-body)
 
-  heading(level: 1, numbering: none, outlined: true)[PRAKATA]
+  // Tidak masuk Daftar Isi (dotx).
+  heading(level: 1, numbering: none, outlined: false)[PRAKATA]
   _reset-heading()
 
-  v(_leading)
-  set par(first-line-indent: 1cm, leading: _leading, spacing: _leading, justify: true)
+  set par(first-line-indent: (amount: 1cm, all: true), leading: _leading, spacing: _leading, justify: true)
   isi
 }
 
@@ -1215,36 +1177,26 @@
 // ─── Daftar Isi, Daftar Tabel, Daftar Gambar ─────────────────
 
 /// Membuat halaman Daftar Isi otomatis (berdasarkan heading dalam naskah).
+/// Dua tingkat (bab dan subbab) seperti dotx. Bab: nomor di 0, judul 0,7 cm.
+/// Subbab: nomor 0,7 cm, judul 2,12 cm. Baris lanjutan menggantung di bawah judul.
 #let daftar-isi() = {
-  pagebreak(weak: true)
-  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading)
-  align(center)[
-    #text(font: _font, size: _sz-bab, weight: "bold")[DAFTAR ISI]
-  ]
-  v(2 * _leading)
+  _ke-gasal()
+  set par(first-line-indent: 0pt, leading: _leading, spacing: _leading, justify: false)
+  heading(level: 1, numbering: none, outlined: false)[DAFTAR ISI]
+  _reset-heading()
+  v(_h1-bawah - _h1-bawah-awal)
   show outline.entry: it => {
     if it.level == 1 { v(6pt, weak: true) }
     let prefix = it.prefix()
+    let loc = it.element.location()
+    let (indent, num-w) = if it.level == 1 { (0pt, 0.7cm) } else { (0.7cm, 1.42cm) }
     grid(
-      columns: (1fr, auto),
-      column-gutter: 0.5em,
-      {
-        h((it.level - 1) * 1cm)
-        link(it.element.location())[
-          #if prefix != none {
-            prefix
-            h(0.5em)
-          }
-          #it.body()
-        ]
-      },
-      align(right + bottom, link(it.element.location())[#it.page()]),
+      columns: (indent, if prefix == none { 0pt } else { num-w }, 1fr, auto),
+      column-gutter: (0pt, 0pt, 1cm),
+      [], link(loc, prefix), link(loc, it.body()), align(right + bottom, link(loc, it.page())),
     )
   }
-  outline(
-    title: none,
-    depth: 3,
-  )
+  outline(title: none, depth: 2)
 }
 
 /// Membuat halaman Daftar Tabel otomatis.
@@ -1277,7 +1229,7 @@
 /// Contoh (dipanggil dari main.typ di root):
 ///   #daftar-pustaka("reference.bib", style: "ipb.csl")
 #let daftar-pustaka(bibfile, style: "ipb.csl") = {
-  pagebreak(weak: true)
+  _ke-gasal()
   // Heading level 1 tanpa nomor bab, tetap masuk outline (Daftar Isi)
   heading(level: 1, numbering: none, outlined: true)[DAFTAR PUSTAKA]
   // Reset counter agar bab berikutnya tidak terganggu
@@ -1306,9 +1258,13 @@
 ///     caption:   [Judul Lampiran 1],
 ///   )[ konten lampiran ]
 #let lampiran(isi) = {
-  pagebreak(weak: true)
+  // Halaman pembatas: "LAMPIRAN" ±10,6 cm di bawah pias atas (dotx before 6000),
+  // isi lampiran mulai di halaman berikutnya.
+  _ke-gasal()
+  v(300pt)
   heading(level: 1, numbering: none, outlined: true)[LAMPIRAN]
   _reset-heading()
+  pagebreak()
   set par(leading: _leading, spacing: _leading, justify: true)
   isi
 }
@@ -1317,7 +1273,7 @@
 // ─── Riwayat Hidup ────────────────────────────────────────────
 
 /// Membuat halaman Riwayat Hidup (halaman baru, maks. 1 halaman).
-/// Tidak masuk dalam Daftar Isi (outlined: false).
+/// Masuk dalam Daftar Isi (dotx).
 ///
 /// Contoh:
 ///   #riwayat-hidup[
@@ -1325,12 +1281,10 @@
 ///     anak pertama dari pasangan Bapak X dan Ibu Y. …
 ///   ]
 #let riwayat-hidup(isi) = {
-  pagebreak(weak: true)
-  align(center)[
-    #text(font: _font, size: _sz-bab, weight: "bold")[RIWAYAT HIDUP]
-  ]
-  v(_leading)
-  set par(leading: _leading, spacing: _leading, first-line-indent: 1cm, justify: true)
+  _ke-gasal()
+  heading(level: 1, numbering: none, outlined: true)[RIWAYAT HIDUP]
+  _reset-heading()
+  set par(leading: _leading, spacing: _leading, first-line-indent: (amount: 1cm, all: true), justify: true)
   isi
 }
 
@@ -1352,8 +1306,9 @@
 //
 // RINCIAN DALAM SUBBAB (Suplemen 1 A butir 8)
 // ---------------------------------------------
-// Pengebaban tidak lebih dari 3 tingkatan. Rincian di dalam subbab
-// maupun sub-subbab memakai huruf: a, b, c, dan seterusnya.
+// Pengebaban tidak lebih dari 3 tingkatan. Rincian mengikuti dotx:
+// di subbab a, b, c (tepi kiri) lalu 1), 2), 3); di sub-subbab pakai
+//   #set enum(numbering: "a)")  dan tingkat kedua "(1)".
 //
 // Paragraf bertingkat (indentasi bertambah 0,5 cm dari paragraf di atasnya):
 //   #bertingkat[
